@@ -5,6 +5,15 @@ inputs:
     description: 'recipe.yml file to build'
     required: true
     default: 'recipe.yml'
+  cosign_private_key:
+    description: 'secret used to sign final image'
+    required: true
+  registry_token:
+    description: 'token used to sign into registry'
+    required: true
+  pr_event_number:
+    description: 'event number'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -31,8 +40,8 @@ runs:
     - name: Build Image
       shell: bash
       env:
-        COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
-        PR_EVENT_NUMBER: ${{ github.event.number }}
-        REGISTRY_TOKEN: ${{ github.token }}
+        COSIGN_PRIVATE_KEY: ${{ inputs.cosign_private_key }}
+        REGISTRY_TOKEN: ${{ inputs.registry_token }}
+        PR_EVENT_NUMBER: ${{ inputs.registry_token }}
       run: |
         bb build --push ./config/${{ inputs.recipe }}
