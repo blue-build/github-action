@@ -33,7 +33,7 @@ jobs:
           - recipe.yml
     steps:
       - name: Build Custom Image
-        uses: blue-build/github-action@v1
+        uses: blue-build/github-action@main
         with:
           recipe: ${{ matrix.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}
