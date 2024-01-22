@@ -42,6 +42,6 @@ runs:
       env:
         COSIGN_PRIVATE_KEY: ${{ inputs.cosign_private_key }}
         REGISTRY_TOKEN: ${{ inputs.registry_token }}
-        PR_EVENT_NUMBER: ${{ inputs.registry_token }}
+        PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
       run: |
         bb build --push ./config/${{ inputs.recipe }}
