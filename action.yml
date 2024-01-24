@@ -25,14 +25,10 @@ runs:
         remove-haskell: 'true'
     - uses: actions/checkout@v4
     - uses: sigstore/cosign-installer@v3.3.0
-    - name: Install Cargo
-      shell: bash
-      run: |
-        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     - name: Install BlueBuild tool
       shell: bash
       run: |
-        cargo install blue-build --locked
+        podman run --rm ghcr.io/blue-build/cli:main-installer | sudo bash
     - name: Install Dependencies
       shell: bash
       run: |
