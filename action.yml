@@ -28,7 +28,7 @@ runs:
     - name: Install BlueBuild tool
       shell: bash
       run: |
-        podman run --rm ghcr.io/blue-build/cli:main-installer | sudo bash
+        podman run --rm ghcr.io/blue-build/cli:main-installer | bash
     - name: Install Dependencies
       shell: bash
       run: |
