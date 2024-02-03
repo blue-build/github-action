@@ -17,22 +17,31 @@ inputs:
 runs:
   using: "composite"
   steps:
+    # building custom images might take a lot of space, 
+    # so it's best to remove unneeded softawre
     - name: Maximize build space
       uses: AdityaGarg8/remove-unwanted-software@v1
       with:
         remove-dotnet: 'true'
         remove-android: 'true'
         remove-haskell: 'true'
+
+    # clones user's repo
     - uses: actions/checkout@v4
+
     - uses: sigstore/cosign-installer@v3.3.0
+
+    # pull self-contained binary program from installer image (outputs a bash install script)
     - name: Install BlueBuild tool
       shell: bash
-      run: |
-        podman run --rm ghcr.io/blue-build/cli:main-installer | bash
+      run: podman run --rm ghcr.io/blue-build/cli:latest-installer | bash
+
+    # deps used by cli to build & inspect imaegs
     - name: Install Dependencies
       shell: bash
-      run: |
-        sudo apt-get install -y buildah skopeo
+      run: sudo apt-get install -y buildah skopeo
+
+    # blue-build/cli does the heavy lifting
     - name: Build Image
       shell: bash
       env:
