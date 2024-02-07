@@ -49,4 +49,4 @@ runs:
         REGISTRY_TOKEN: ${{ inputs.registry_token }}
         PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
       run: |
-        bb build --push ./config/${{ inputs.recipe }}
+        bluebuild build --push ./config/${{ inputs.recipe }}
