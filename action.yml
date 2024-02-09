@@ -34,7 +34,7 @@ runs:
     # pull self-contained binary program from installer image (outputs a bash install script)
     - name: Install BlueBuild tool
       shell: bash
-      run: podman run --rm ghcr.io/blue-build/cli:latest-installer | bash
+      run: podman run --rm ghcr.io/blue-build/cli:v0.7.0-installer | bash
 
     # deps used by cli to build & inspect imaegs
     - name: Install Dependencies
