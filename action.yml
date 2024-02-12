@@ -25,7 +25,7 @@ runs:
     # clones user's repo
     - uses: actions/checkout@v4
 
-    - uses: sigstore/cosign-installer@v3.3.0
+    - uses: sigstore/cosign-installer@v3.4.0
 
     # pull self-contained binary program from installer image (outputs a bash install script)
     - name: Install BlueBuild tool
