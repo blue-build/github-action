@@ -20,11 +20,7 @@ runs:
     # building custom images might take a lot of space, 
     # so it's best to remove unneeded softawre
     - name: Maximize build space
-      uses: AdityaGarg8/remove-unwanted-software@v1
-      with:
-        remove-dotnet: 'true'
-        remove-android: 'true'
-        remove-haskell: 'true'
+      uses: ublue-os/remove-unwanted-software@v6
 
     # clones user's repo
     - uses: actions/checkout@v4
