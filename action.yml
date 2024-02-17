@@ -39,4 +39,4 @@ runs:
         PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
       run: |
         podman run --env-host --network=host --privileged --device /dev/fuse -v $PWD:/bluebuild ghcr.io/blue-build/cli:v0.7.1 \
-        build --push ./config/${{ inputs.recipe }} --registry ${{inputs.registry}} --registry-namespace ${{inputs.registry_namespace}}
+        build --push ./config/${{ inputs.recipe }}
