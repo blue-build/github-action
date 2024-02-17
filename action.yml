@@ -25,17 +25,10 @@ runs:
     # clones user's repo
     - uses: actions/checkout@v4
 
-    - uses: sigstore/cosign-installer@v3.4.0
-
-    # pull self-contained binary program from installer image (outputs a bash install script)
-    - name: Install BlueBuild tool
-      shell: bash
-      run: podman run --rm ghcr.io/blue-build/cli:v0.7.0-installer | bash
-
     # deps used by cli to build & inspect imaegs
     - name: Install Dependencies
       shell: bash
-      run: sudo apt-get install -y buildah skopeo
+      run: sudo apt-get install -y podman
 
     # blue-build/cli does the heavy lifting
     - name: Build Image
@@ -45,4 +38,5 @@ runs:
         REGISTRY_TOKEN: ${{ inputs.registry_token }}
         PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
       run: |
-        bluebuild build --push ./config/${{ inputs.recipe }}
+        podman run --env-host --network=host --privileged --device /dev/fuse -v $PWD:/bluebuild ghcr.io/blue-build/cli:v0.7.1 \
+        build --push ./config/${{ inputs.recipe }} --registry ${{inputs.registry}} --registry-namespace ${{inputs.registry_namespace}}
