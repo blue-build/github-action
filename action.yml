@@ -5,6 +5,14 @@ inputs:
     description: 'recipe.yml file to build'
     required: true
     default: 'recipe.yml'
+  registry:
+    description: 'container registry to push image to (default: ghcr.io)'
+    required: false
+    default: 'ghcr.io'
+  registry_namespace:
+    description: 'namespace on registry to push to (example: ublue-os)'
+    required: false
+    default: ${{github.repository_owner}}
   cosign_private_key:
     description: 'secret used to sign final image'
     required: true
@@ -39,4 +47,4 @@ runs:
         PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
       run: |
         podman run --env-host --network=host --privileged --device /dev/fuse -v $PWD:/bluebuild \
-        ghcr.io/blue-build/cli:v0.7.1-alpine build --push ./config/${{ inputs.recipe }}
+        ghcr.io/blue-build/cli:v0.7.1-alpine build --push ./config/${{ inputs.recipe }} --registry ${{inputs.registry}} --registry-namespace ${{inputs.registry_namespace}}
