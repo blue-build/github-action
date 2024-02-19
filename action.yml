@@ -15,7 +15,7 @@ inputs:
     default: ${{github.repository_owner}}
   cosign_private_key:
     description: 'secret used to sign final image'
-    required: true
+    required: false
   registry_token:
     description: 'token used to sign into registry'
     required: true
