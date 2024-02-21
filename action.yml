@@ -43,8 +43,8 @@ runs:
       shell: bash
       env:
         COSIGN_PRIVATE_KEY: ${{ inputs.cosign_private_key }}
-        GITHUB_TOKEN: ${{ inputs.registry_token }}
-        PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
+        GH_TOKEN: ${{ inputs.registry_token }}
+        GH_PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
       run: |
         podman run \
           -v buildah-vol:/var/run/containerd \
