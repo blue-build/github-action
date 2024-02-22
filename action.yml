@@ -2,26 +2,38 @@ name: 'BlueBuild'
 description: 'Build a custom OS image'
 inputs:
   recipe:
-    description: 'recipe.yml file to build'
+    description: |
+      The [recipe](https://blue-build.org/reference/recipe/) file to build the image from, relative to the `config/` directory.
     required: true
     default: 'recipe.yml'
+  cosign_private_key:
+    description: |
+      The Sigstore/cosign secret used to sign the image.
+    required: true
+  registry_token:
+    description: | 
+      The token used to sign into the container registry.
+
+      Example: `${{ github.token }}`
+    required: true
+  pr_event_number:
+    description: |
+      The event number used to tag images pushed from pull requests.
+
+      Example: `${{ github.event.number }}`
+    required: true
   registry:
-    description: 'container registry to push image to (default: ghcr.io)'
+    description: |
+      The container registry to push the built image to.'
     required: false
     default: 'ghcr.io'
   registry_namespace:
-    description: 'namespace on registry to push to (example: ublue-os)'
+    description: |
+     The namespace on the registry to push to.
+     
+     Example: `ublue-os`
     required: false
-    default: ${{github.repository_owner}}
-  cosign_private_key:
-    description: 'secret used to sign final image'
-    required: true
-  registry_token:
-    description: 'token used to sign into registry'
-    required: true
-  pr_event_number:
-    description: 'event number'
-    required: true
+    default: ${{ github.repository_owner }}
 runs:
   using: "composite"
   steps:
