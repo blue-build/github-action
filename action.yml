@@ -26,7 +26,7 @@ inputs:
     description: |
       Whether to run the unwanted software remover to maximize build space in the GitHub builder.
       Use this if your builds are taking too much space.
-      Input must match the string "true" for the step to be enabled.
+      Input must match the string 'true' for the step to be enabled.
     default: 'false'
 runs:
   using: "composite"
