@@ -9,6 +9,8 @@ inputs:
   cosign_private_key:
     description: |
       The Sigstore/cosign secret used to sign the image.
+
+      Example: `${{ secrets.SIGNING_SECRET }}`
     required: true
   registry_token:
     description: | 
