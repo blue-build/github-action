@@ -26,7 +26,7 @@ inputs:
     required: true
   registry:
     description: |
-      The container registry to push the built image to.'
+      The container registry to push the built image to.
     required: false
     default: 'ghcr.io'
   registry_namespace:
