@@ -22,6 +22,12 @@ inputs:
   pr_event_number:
     description: 'event number'
     required: true
+  maximize_build_space:
+    description: |
+      Whether to run the unwanted software remover to maximize build space in the GitHub builder.
+      Use this if your builds are taking too much space.
+      Input must match the string "true" for the step to be enabled.
+    default: "false"
 runs:
   using: "composite"
   steps:
@@ -29,6 +35,7 @@ runs:
     # so it's best to remove unneeded softawre
     - name: Maximize build space
       uses: ublue-os/remove-unwanted-software@v6
+      if: ${{ inputs.maximize_build_space == "true" }}
 
     # clones user's repo
     - uses: actions/checkout@v4
