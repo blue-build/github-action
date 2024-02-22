@@ -10,19 +10,19 @@ inputs:
     description: |
       The Sigstore/cosign secret used to sign the image.
 
-      Example: `\${{ secrets.SIGNING_SECRET }}`
+      Example: `&#36;{{ secrets.SIGNING_SECRET }}`
     required: true
   registry_token:
     description: | 
       The token used to sign into the container registry.
 
-      Example: `\${{ github.token }}`
+      Example: `&#36;{{ github.token }}`
     required: true
   pr_event_number:
     description: |
       The event number used to tag images pushed from pull requests.
 
-      Example: `\${{ github.event.number }}`
+      Example: `&#36;{{ github.event.number }}`
     required: true
   registry:
     description: |
