@@ -53,7 +53,7 @@ runs:
           --network=host \
           --privileged \
           --device /dev/fuse \
-          ghcr.io/blue-build/cli:main-alpine \
+          ghcr.io/blue-build/cli:v0.8.0-alpine \
           build -vv --push ./config/${{ inputs.recipe }} \
           --registry ${{inputs.registry}} \
           --registry-namespace ${{inputs.registry_namespace}}
