@@ -65,9 +65,17 @@ runs:
       shell: bash
       env:
         COSIGN_PRIVATE_KEY: ${{ inputs.cosign_private_key }}
-        REGISTRY_TOKEN: ${{ inputs.registry_token }}
-        PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
+        GH_TOKEN: ${{ inputs.registry_token }}
+        GH_PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
       run: |
-        podman run --env-host --network=host --privileged --device /dev/fuse -v $PWD:/bluebuild \
-        ghcr.io/blue-build/cli:v0.7.1-alpine build --push ./config/${{ inputs.recipe }} \
-        --registry ${{inputs.registry}} --registry-namespace ${{inputs.registry_namespace}}
+        podman run \
+          -v buildah-vol:/var/run/containerd \
+          -v $PWD:/bluebuild \
+          --env-host \
+          --network=host \
+          --privileged \
+          --device /dev/fuse \
+          ghcr.io/blue-build/cli:v0.8.0-alpine \
+          build -vv --push ./config/${{ inputs.recipe }} \
+          --registry ${{inputs.registry}} \
+          --registry-namespace ${{inputs.registry_namespace}}
