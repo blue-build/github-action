@@ -60,13 +60,6 @@ runs:
       shell: bash
       run: sudo apt-get install -y podman
 
-    - name: Cache build
-      id: cache-containers
-      uses: actions/cache@v4
-      with:
-        path: /var/run/containerd
-        key: containerd-${{ inputs.recipe }}
-
     # blue-build/cli does the heavy lifting
     - name: Build Image
       shell: bash
@@ -76,7 +69,6 @@ runs:
         GH_PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
       run: |
         podman run \
-          -v /var/run/containerd:/var/run/containerd \
           -v $PWD:/bluebuild \
           --env-host \
           --network=host \
