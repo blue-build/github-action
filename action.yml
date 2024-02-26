@@ -69,7 +69,7 @@ runs:
         GH_PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
       run: |
         podman run \
-          -v bluebuild:/var/run/containers/
+          -v bluebuild:/var/run/containers/ \
           -v $PWD:/bluebuild \
           --env-host \
           --network=host \
