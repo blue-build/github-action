@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/blue-build/github-action/compare/v1.1.0...v1.1.1) (2024-02-26)
+
+
+### Bug Fixes
+
+* **release-please:** add id to release step to make subsequent steps work ([64942c5](https://github.com/blue-build/github-action/commit/64942c55e35e567dbd20df06f4583fe4004d9749))
+
 ## [1.1.0](https://github.com/blue-build/github-action/compare/v1.0.2...v1.1.0) (2024-02-25)
 
 
