@@ -74,7 +74,7 @@ runs:
           ghcr.io/blue-build/cli:main-installer \
           tail -f /dev/null
         docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
-        docker stop -i -t 0 blue-build-installer
+        docker stop -t 0 blue-build-installer
 
     # clones user's repo
     - uses: actions/checkout@v4
