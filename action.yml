@@ -43,6 +43,13 @@ inputs:
      Example: `ublue-os`
     required: false
     default: ${{ github.repository_owner }}
+  use_cache:
+    description: |
+      Make use of docker buildx cache. This is an experimental feature of docker buildx
+      so it isn't guaranteed to work.
+      Input must match the string 'true' for the step to be enabled.
+    required: false
+    default: 'false'
 runs:
   using: "composite"
   steps:
@@ -73,6 +80,7 @@ runs:
     - uses: actions/checkout@v4
 
     - name: Expose GitHub Runtime
+      if: ${{ inputs.use_cache == 'true' }}
       uses: crazy-max/ghaction-github-runtime@v3
 
     # blue-build/cli does the heavy lifting
@@ -82,6 +90,7 @@ runs:
         COSIGN_PRIVATE_KEY: ${{ inputs.cosign_private_key }}
         GH_TOKEN: ${{ inputs.registry_token }}
         GH_PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
+        BB_BUILDKIT_CACHE_GHA: ${{ inputs.use_cache }}
       run: |
           bluebuild build -vv --push ./config/${{ inputs.recipe }} \
           --registry ${{inputs.registry}} \
