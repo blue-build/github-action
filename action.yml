@@ -86,5 +86,5 @@ runs:
           --device /dev/fuse \
           ghcr.io/blue-build/cli:${CLI_VERSION_TAG}-alpine \
           build -vv --push ./config/${{ inputs.recipe }} \
-          --registry ${{inputs.registry}} \
-          --registry-namespace ${{inputs.registry_namespace}}
+          --registry ${{ inputs.registry }} \
+          --registry-namespace ${{ inputs.registry_namespace }}
