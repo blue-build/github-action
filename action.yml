@@ -31,6 +31,13 @@ inputs:
       Input must match the string 'true' for the step to be enabled.
     required: false
     default: 'false'
+  use_unstable_cli:
+    description: |
+      If true, this action pulls the `main` branch of blue-build/cli instead of the stable version the current action version is configured to use by default. 
+      This feature is useful for testing new features, but should not be used in production.
+      Input must match the string 'true' for the unstable version to be used.
+    required: false
+    default: 'false'
   registry:
     description: |
       The container registry to push the built image to.
@@ -67,15 +74,17 @@ runs:
         COSIGN_PRIVATE_KEY: ${{ inputs.cosign_private_key }}
         GH_TOKEN: ${{ inputs.registry_token }}
         GH_PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
+        # Uses GitHubs ternary syntax to set cli version, see https://docs.github.com/en/actions/learn-github-actions/expressions#example
+        CLI_VERSION_TAG: ${{ inputs.use_unstable_cli == 'true' && 'main' || 'v0.8.1' }}}}
       run: |
         podman run \
           -v buildah-vol:/var/run/containerd \
-          -v $PWD:/bluebuild \
+          -v ${PWD}:/bluebuild \
           --env-host \
           --network=host \
           --privileged \
           --device /dev/fuse \
-          ghcr.io/blue-build/cli:v0.8.1-alpine \
+          ghcr.io/blue-build/cli:${CLI_VERSION_TAG}-alpine \
           build -vv --push ./config/${{ inputs.recipe }} \
           --registry ${{inputs.registry}} \
           --registry-namespace ${{inputs.registry_namespace}}
