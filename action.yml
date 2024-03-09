@@ -50,6 +50,14 @@ inputs:
      Example: `ublue-os`
     required: false
     default: ${{ github.repository_owner }}
+  use_cache:
+    description: |
+      Make use of docker buildx cache. This is an experimental feature of docker buildx
+      so it isn't guaranteed to work.
+      Input must match the string 'true' for the step to be enabled.
+    required: false
+    default: 'false'
+
 runs:
   using: "composite"
   steps:
