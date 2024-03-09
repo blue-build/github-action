@@ -76,6 +76,7 @@ runs:
     - name: Install BlueBuild
       shell: bash
       env:
+        # Uses GitHubs ternary syntax to set cli version, see https://docs.github.com/en/actions/learn-github-actions/expressions#example
         CLI_VERSION_TAG: ${{ inputs.use_unstable_cli == 'true' && 'main' || 'v0.8.2' }}
       run: |
         docker run \
@@ -89,6 +90,7 @@ runs:
 
     # clones user's repo
     - uses: actions/checkout@v4
+    - uses: sigstore/cosign-installer@v3.4.0
 
     # This is required in order to take advantage of docker's cache integration with GitHub Actions.experimental
     # https://github.com/moby/buildkit?tab=readme-ov-file#github-actions-cache-
