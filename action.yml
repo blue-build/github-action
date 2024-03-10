@@ -86,11 +86,6 @@ runs:
     - uses: actions/checkout@v4
     - uses: sigstore/cosign-installer@v3.4.0
 
-    # This is required in order to take advantage of docker's cache integration with GitHub Actions.experimental
-    # https://github.com/moby/buildkit?tab=readme-ov-file#github-actions-cache-
-    - name: Expose GitHub Runtime
-      if: ${{ inputs.use_cache == 'true' }}
-      uses: crazy-max/ghaction-github-runtime@v3
 
     # blue-build/cli does the heavy lifting
     - name: Build Image
