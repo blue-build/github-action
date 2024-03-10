@@ -94,7 +94,6 @@ runs:
         COSIGN_PRIVATE_KEY: ${{ inputs.cosign_private_key }}
         GH_TOKEN: ${{ inputs.registry_token }}
         GH_PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
-        BB_BUILDKIT_CACHE_GHA: ${{ inputs.use_cache }}
       run: |
           bluebuild build -v --push ./config/${{ inputs.recipe }} \
           --registry ${{inputs.registry}} \
