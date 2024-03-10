@@ -66,6 +66,7 @@ runs:
         driver: docker
         cache-binary: ${{ inputs.use_cache }}
 
+    - uses: sigstore/cosign-installer@v3.3.0
     - name: Install BlueBuild
       shell: bash
       run: |
