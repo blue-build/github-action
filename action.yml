@@ -71,7 +71,15 @@ runs:
       env:
         # Uses GitHubs ternary syntax to set cli version, see https://docs.github.com/en/actions/learn-github-actions/expressions#example
         CLI_VERSION_TAG: ${{ inputs.use_unstable_cli == 'true' && 'main' || 'v0.8.2' }}
-      run: podman run --rm ghcr.io/blue-build/cli:${CLI_VERSION_TAG}-installer | bash
+      run: |
+        docker run \
+          --detach \
+          --rm \
+          --name blue-build-installer \
+          ghcr.io/blue-build/cli:${{ env.CLI_VERSION_TAG }}-installer \
+          tail -f /dev/null
+        docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
+        docker stop -t 0 blue-build-installer
 
     # clones user's repo
     - uses: actions/checkout@v4
