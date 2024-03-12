@@ -50,6 +50,7 @@ inputs:
      Example: `ublue-os`
     required: false
     default: ${{ github.repository_owner }}
+
 runs:
   using: "composite"
   steps:
@@ -59,13 +60,31 @@ runs:
       uses: ublue-os/remove-unwanted-software@v6
       if: ${{ inputs.maximize_build_space == 'true' }}
 
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      with:
+        install: true
+        driver: docker
+
+    - name: Install BlueBuild
+      shell: bash
+      env:
+        # Uses GitHubs ternary syntax to set cli version, see https://docs.github.com/en/actions/learn-github-actions/expressions#example
+        CLI_VERSION_TAG: ${{ inputs.use_unstable_cli == 'true' && 'main' || 'v0.8.2' }}
+      run: |
+        docker run \
+          --detach \
+          --rm \
+          --name blue-build-installer \
+          ghcr.io/blue-build/cli:${{ env.CLI_VERSION_TAG }}-installer \
+          tail -f /dev/null
+        docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
+        docker stop -t 0 blue-build-installer
+
     # clones user's repo
     - uses: actions/checkout@v4
+    - uses: sigstore/cosign-installer@v3.4.0
 
-    # deps used by cli to build & inspect imaegs
-    - name: Install Dependencies
-      shell: bash
-      run: sudo apt-get install -y podman
 
     # blue-build/cli does the heavy lifting
     - name: Build Image
@@ -74,17 +93,7 @@ runs:
         COSIGN_PRIVATE_KEY: ${{ inputs.cosign_private_key }}
         GH_TOKEN: ${{ inputs.registry_token }}
         GH_PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
-        # Uses GitHubs ternary syntax to set cli version, see https://docs.github.com/en/actions/learn-github-actions/expressions#example
-        CLI_VERSION_TAG: ${{ inputs.use_unstable_cli == 'true' && 'main' || 'v0.8.2' }}
       run: |
-        podman run \
-          -v buildah-vol:/var/run/containerd \
-          -v ${PWD}:/bluebuild \
-          --env-host \
-          --network=host \
-          --privileged \
-          --device /dev/fuse \
-          ghcr.io/blue-build/cli:${CLI_VERSION_TAG}-alpine \
-          build -vv --push ./config/${{ inputs.recipe }} \
-          --registry ${{ inputs.registry }} \
-          --registry-namespace ${{ inputs.registry_namespace }}
+          bluebuild build -v --push ./config/${{ inputs.recipe }} \
+          --registry ${{inputs.registry}} \
+          --registry-namespace ${{inputs.registry_namespace}}
