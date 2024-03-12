@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0](https://github.com/blue-build/github-action/compare/v1.1.1...v1.2.0) (2024-03-12)
+
+
+### Features
+
+* add input to use unstable cli ([#17](https://github.com/blue-build/github-action/issues/17)) ([#26](https://github.com/blue-build/github-action/issues/26)) ([229504e](https://github.com/blue-build/github-action/commit/229504e5e1755dbd7b800a074f9800d88a46fc85))
+
+
+### Bug Fixes
+
+* Remove extra curly braces ([1e5f19a](https://github.com/blue-build/github-action/commit/1e5f19ac32e372e81e967a62f88cbd8b9bedfd1f))
+* use docker to build images ([#16](https://github.com/blue-build/github-action/issues/16)) ([#29](https://github.com/blue-build/github-action/issues/29)) ([3475a0c](https://github.com/blue-build/github-action/commit/3475a0c8e793c7460b42f62c2d970edf2e3918b6))
+
 ## [1.1.1](https://github.com/blue-build/github-action/compare/v1.1.0...v1.1.1) (2024-02-26)
 
 
