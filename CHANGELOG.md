@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/blue-build/github-action/compare/v1.2.0...v1.3.0) (2024-03-29)
+
+
+### Features
+
+* upgrade bluebuild cli version ([#31](https://github.com/blue-build/github-action/issues/31)) ([8be425d](https://github.com/blue-build/github-action/commit/8be425d5fd6bd1b3009b0cdbff35e4be2970de00))
+
 ## [1.2.0](https://github.com/blue-build/github-action/compare/v1.1.1...v1.2.0) (2024-03-12)
 
 
