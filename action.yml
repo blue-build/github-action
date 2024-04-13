@@ -57,7 +57,7 @@ runs:
     # building custom images might take a lot of space, 
     # so it's best to remove unneeded softawre
     - name: Maximize build space
-      uses: ublue-os/remove-unwanted-software@v6
+      uses: jlumbroso/free-disk-space@v1.3.1
       if: ${{ inputs.maximize_build_space == 'true' }}
 
     - name: Set up Docker Buildx
