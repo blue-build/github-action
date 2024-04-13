@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/blue-build/github-action/compare/v1.3.0...v1.3.1) (2024-04-13)
+
+
+### Bug Fixes
+
+* switch to new build space maximer action ([#35](https://github.com/blue-build/github-action/issues/35)) ([4ca0217](https://github.com/blue-build/github-action/commit/4ca0217c3f353a5c0345b83d209ff72e98525cfe))
+
 ## [1.3.0](https://github.com/blue-build/github-action/compare/v1.2.0...v1.3.0) (2024-03-29)
 
 
