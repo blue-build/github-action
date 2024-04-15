@@ -83,7 +83,7 @@ runs:
 
     # clones user's repo
     - uses: actions/checkout@v4
-    - uses: sigstore/cosign-installer@v3.4.0
+    - uses: sigstore/cosign-installer@v3.5.0
 
 
     # blue-build/cli does the heavy lifting
