@@ -70,7 +70,7 @@ runs:
       shell: bash
       env:
         # Uses GitHubs ternary syntax to set cli version, see https://docs.github.com/en/actions/learn-github-actions/expressions#example
-        CLI_VERSION_TAG: ${{ inputs.use_unstable_cli == 'true' && 'main' || 'v0.8.3' }}
+        CLI_VERSION_TAG: ${{ inputs.use_unstable_cli == 'true' && 'main' || 'latest' }}
       run: |
         docker run \
           --detach \
@@ -93,6 +93,8 @@ runs:
         COSIGN_PRIVATE_KEY: ${{ inputs.cosign_private_key }}
         GH_TOKEN: ${{ inputs.registry_token }}
         GH_PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
+        RUST_LOG_STYLE: always
+        CLICOLOR_FORCE: '1'
       run: |
           bluebuild build -v --push ./config/${{ inputs.recipe }} \
           --registry ${{inputs.registry}} \
