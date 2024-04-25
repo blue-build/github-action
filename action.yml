@@ -71,7 +71,7 @@ runs:
       uses: docker/setup-buildx-action@v3
       with:
         install: true
-        driver: docker
+        driver: docker-container
         cache-binary: ${{ inputs.use_cache }}
 
     - name: Install BlueBuild
