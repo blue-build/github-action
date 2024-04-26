@@ -50,6 +50,13 @@ inputs:
      Example: `ublue-os`
     required: false
     default: ${{ github.repository_owner }}
+  use_cache:
+    description: |
+      Make use of docker buildx cache. This is an experimental feature of docker buildx
+      so it isn't guaranteed to work.
+      Input must match the string 'true' for the step to be enabled.
+    required: false
+    default: 'true'
 
 runs:
   using: "composite"
@@ -64,7 +71,8 @@ runs:
       uses: docker/setup-buildx-action@v3
       with:
         install: true
-        driver: docker
+        driver: docker-container
+        cache-binary: ${{ inputs.use_cache }}
 
     - name: Install BlueBuild
       shell: bash
@@ -85,6 +93,12 @@ runs:
     - uses: actions/checkout@v4
     - uses: sigstore/cosign-installer@v3.5.0
 
+    # Required in order for docker buildx to
+    # take advantage of the GHA cache API
+    - name: Expose GitHub Runtime
+      if: ${{ inputs.use_cache == 'true' }}
+      uses: crazy-max/ghaction-github-runtime@v3
+
 
     # blue-build/cli does the heavy lifting
     - name: Build Image
@@ -93,7 +107,15 @@ runs:
         COSIGN_PRIVATE_KEY: ${{ inputs.cosign_private_key }}
         GH_TOKEN: ${{ inputs.registry_token }}
         GH_PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
+        RECIPE: ${{ inputs.recipe }}
+        BB_BUILDKIT_CACHE_GHA: ${{ inputs.use_cache }}
       run: |
-          bluebuild build -v --push ./config/${{ inputs.recipe }} \
+        RECIPE_PATH=""
+        if [ -f "./config/${RECIPE}" ]; then
+          RECIPE_PATH="./config/${RECIPE}"
+        else
+          RECIPE_PATH="./recipes/${RECIPE}"
+        fi
+        bluebuild build -v --push ${RECIPE_PATH} \
           --registry ${{inputs.registry}} \
           --registry-namespace ${{inputs.registry_namespace}}
