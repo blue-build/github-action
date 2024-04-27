@@ -109,7 +109,7 @@ runs:
       shell: bash
       if: ${{ inputs.squash != 'true' }}
       env:
-        CLI_VERSION_TAG: ${{ steps.build_vars.output.cli_version }}
+        CLI_VERSION_TAG: ${{ steps.build_vars.outputs.cli_version }}
       run: |
         docker run \
           --detach \
@@ -139,7 +139,7 @@ runs:
         GH_TOKEN: ${{ inputs.registry_token }}
         GH_PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
         BB_BUILDKIT_CACHE_GHA: ${{ inputs.use_cache }}
-        RECIPE_PATH: ${{ steps.build_vars.output.recipe_path }}
+        RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
       run: |
         bluebuild build -v --push ${RECIPE_PATH} \
           --registry ${{inputs.registry}} \
@@ -152,8 +152,8 @@ runs:
         COSIGN_PRIVATE_KEY: ${{ inputs.cosign_private_key }}
         GH_TOKEN: ${{ inputs.registry_token }}
         GH_PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
-        CLI_VERSION_TAG: ${{ steps.build_vars.output.cli_version }}
-        RECIPE_PATH: ${{ steps.build_vars.output.recipe_path }}
+        CLI_VERSION_TAG: ${{ steps.build_vars.outputs.cli_version }}
+        RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
       run: |
         podman run \
           -v buildah-imagestores:/usr/lib/containers/storage \
