@@ -152,7 +152,7 @@ runs:
         COSIGN_PRIVATE_KEY: ${{ inputs.cosign_private_key }}
         GH_TOKEN: ${{ inputs.registry_token }}
         GH_PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
-        CLI_VERSION_TAG: ${{ build_vars.output.cli-version }}
+        CLI_VERSION_TAG: ${{ steps.build_vars.output.cli-version }}
         RECIPE_PATH: ${{ steps.build_vars.output.recipe_path }}
       run: |
         podman run \
