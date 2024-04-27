@@ -109,7 +109,7 @@ runs:
       shell: bash
       if: ${{ inputs.squash != 'true' }}
       env:
-        CLI_VERSION_TAG: ${{ steps.build_vars.output.cli-version }}
+        CLI_VERSION_TAG: ${{ steps.build_vars.output.cli_version }}
       run: |
         docker run \
           --detach \
@@ -152,7 +152,7 @@ runs:
         COSIGN_PRIVATE_KEY: ${{ inputs.cosign_private_key }}
         GH_TOKEN: ${{ inputs.registry_token }}
         GH_PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
-        CLI_VERSION_TAG: ${{ steps.build_vars.output.cli-version }}
+        CLI_VERSION_TAG: ${{ steps.build_vars.output.cli_version }}
         RECIPE_PATH: ${{ steps.build_vars.output.recipe_path }}
       run: |
         podman run \
