@@ -57,6 +57,12 @@ inputs:
       Input must match the string 'true' for the step to be enabled.
     required: false
     default: 'true'
+  squash:
+    description: |
+      Uses buildah to squash the build's layers into a single layer. Use of this option
+      disables cache.
+    required: false
+    default: 'false'
 
 runs:
   using: "composite"
@@ -69,16 +75,41 @@ runs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
+      if: ${{ inputs.squash != 'true' }}
       with:
         install: true
         driver: docker-container
         cache-binary: ${{ inputs.use_cache }}
 
-    - name: Install BlueBuild
+    # clones user's repo
+    - uses: actions/checkout@v4
+
+    - name: Determine Vars
+      id: build_vars
       shell: bash
       env:
-        # Uses GitHubs ternary syntax to set cli version, see https://docs.github.com/en/actions/learn-github-actions/expressions#example
-        CLI_VERSION_TAG: ${{ inputs.use_unstable_cli == 'true' && 'main' || 'v0.8.4' }}
+        RECIPE: ${{ inputs.recipe }}
+      run: |
+        if [[ "${{ inputs.use_unstable_cli }}" == "true" ]]; then
+          CLI_VERSION_TAG="main"
+        else
+          CLI_VERSION_TAG="v0.8"
+        fi
+        echo "cli_version=${CLI_VERSION_TAG}" >> ${GITHUB_OUTPUT}
+
+        RECIPE_PATH=""
+        if [ -f "./config/${RECIPE}" ]; then
+          RECIPE_PATH="./config/${RECIPE}"
+        else
+          RECIPE_PATH="./recipes/${RECIPE}"
+        fi
+        echo "recipe_path=${RECIPE_PATH}" >> ${GITHUB_OUTPUT}
+
+    - name: Install BlueBuild
+      shell: bash
+      if: ${{ inputs.squash != 'true' }}
+      env:
+        CLI_VERSION_TAG: ${{ steps.build_vars.outputs.cli_version }}
       run: |
         docker run \
           --detach \
@@ -89,33 +120,51 @@ runs:
         docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
         docker stop -t 0 blue-build-installer
 
-    # clones user's repo
-    - uses: actions/checkout@v4
     - uses: sigstore/cosign-installer@v3.5.0
+      if: ${{ inputs.squash != 'true' }}
 
     # Required in order for docker buildx to
     # take advantage of the GHA cache API
     - name: Expose GitHub Runtime
-      if: ${{ inputs.use_cache == 'true' }}
+      if: ${{ inputs.use_cache == 'true' && inputs.squash != 'true' }}
       uses: crazy-max/ghaction-github-runtime@v3
 
 
     # blue-build/cli does the heavy lifting
     - name: Build Image
       shell: bash
+      if: ${{ inputs.squash != 'true' }}
       env:
         COSIGN_PRIVATE_KEY: ${{ inputs.cosign_private_key }}
         GH_TOKEN: ${{ inputs.registry_token }}
         GH_PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
-        RECIPE: ${{ inputs.recipe }}
         BB_BUILDKIT_CACHE_GHA: ${{ inputs.use_cache }}
+        RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
       run: |
-        RECIPE_PATH=""
-        if [ -f "./config/${RECIPE}" ]; then
-          RECIPE_PATH="./config/${RECIPE}"
-        else
-          RECIPE_PATH="./recipes/${RECIPE}"
-        fi
         bluebuild build -v --push ${RECIPE_PATH} \
+          --registry ${{inputs.registry}} \
+          --registry-namespace ${{inputs.registry_namespace}}
+
+    - name: Build Squashed Image
+      shell: bash
+      if: ${{ inputs.squash == 'true' }}
+      env:
+        COSIGN_PRIVATE_KEY: ${{ inputs.cosign_private_key }}
+        GH_TOKEN: ${{ inputs.registry_token }}
+        GH_PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
+        CLI_VERSION_TAG: ${{ steps.build_vars.outputs.cli_version }}
+        RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
+      run: |
+        podman run \
+          -v buildah-imagestores:/usr/lib/containers/storage \
+          -v buildah-graphroot:/var/lib/containers/storage \
+          -v buildah-runroot:/run/containers/storage \
+          -v $PWD:/bluebuild \
+          --env-host \
+          --network=host \
+          --privileged \
+          --device /dev/fuse \
+          ghcr.io/blue-build/cli:${CLI_VERSION_TAG}-alpine \
+          build -v -B buildah --squash --push ${RECIPE_PATH} \
           --registry ${{inputs.registry}} \
           --registry-namespace ${{inputs.registry_namespace}}
