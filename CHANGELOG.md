@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/blue-build/github-action/compare/v1.4.0...v1.5.0) (2024-05-01)
+
+
+### Features
+
+* Add ability to squash builds ([#41](https://github.com/blue-build/github-action/issues/41)) ([f7c352d](https://github.com/blue-build/github-action/commit/f7c352d0ee88f5ea3e582a3f6153b451b10d418f))
+
 ## [1.4.0](https://github.com/blue-build/github-action/compare/v1.3.1...v1.4.0) (2024-04-26)
 
 
