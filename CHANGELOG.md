@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/blue-build/github-action/compare/v1.3.1...v1.4.0) (2024-04-26)
+
+
+### Features
+
+* Add support for recipes in ./recipes and add cache support ([#39](https://github.com/blue-build/github-action/issues/39)) ([b121a8f](https://github.com/blue-build/github-action/commit/b121a8f9ca987bf21989b5ba729d2bcfe0a3e3d4))
+
 ## [1.3.1](https://github.com/blue-build/github-action/compare/v1.3.0...v1.3.1) (2024-04-13)
 
 
