@@ -87,6 +87,16 @@ runs:
         driver: docker-container
         cache-binary: ${{ inputs.use_cache }}
 
+    - name: Install Homebrew
+      if: ${{ inputs.squash == 'true' }}
+      uses: homebrew/actions/setup-homebrew@master
+
+    - name: Setup Podman
+      if: ${{ inputs.squash == 'true' }}
+      shell: bash
+      run: |
+        brew install podman
+
     # clones user's repo
     - uses: actions/checkout@v4
 
@@ -163,16 +173,6 @@ runs:
         CLI_VERSION_TAG: ${{ steps.build_vars.outputs.cli_version }}
         RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
       run: |
-        podman run \
-          -v buildah-imagestores:/usr/lib/containers/storage \
-          -v buildah-graphroot:/var/lib/containers/storage \
-          -v buildah-runroot:/run/containers/storage \
-          -v $PWD:/bluebuild \
-          --env-host \
-          --network=host \
-          --privileged \
-          --device /dev/fuse \
-          ghcr.io/blue-build/cli:${CLI_VERSION_TAG}-alpine \
-          build -v -B buildah --squash --push ${RECIPE_PATH} \
+        bluebuild build -v -B podman --squash --push ${RECIPE_PATH} \
           --registry ${{inputs.registry}} \
           --registry-namespace ${{inputs.registry_namespace}}
