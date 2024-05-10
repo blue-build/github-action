@@ -123,7 +123,6 @@ runs:
 
     - name: Install BlueBuild
       shell: bash
-      if: ${{ inputs.squash != 'true' }}
       env:
         CLI_VERSION_TAG: ${{ steps.build_vars.outputs.cli_version }}
       run: |
