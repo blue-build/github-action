@@ -87,15 +87,19 @@ runs:
         driver: docker-container
         cache-binary: ${{ inputs.use_cache }}
 
+    # Installs the latest version of Podman
+    # that is compatible with BlueBuild
     - name: Install Homebrew
       if: ${{ inputs.squash == 'true' }}
       uses: homebrew/actions/setup-homebrew@master
-
     - name: Setup Podman
       if: ${{ inputs.squash == 'true' }}
       shell: bash
       run: |
         brew install podman
+        brew services start podman
+
+    - uses: sigstore/cosign-installer@v3.5.0
 
     # clones user's repo
     - uses: actions/checkout@v4
@@ -134,9 +138,6 @@ runs:
           tail -f /dev/null
         docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
         docker stop -t 0 blue-build-installer
-
-    - uses: sigstore/cosign-installer@v3.5.0
-      if: ${{ inputs.squash != 'true' }}
 
     # Required in order for docker buildx to
     # take advantage of the GHA cache API
