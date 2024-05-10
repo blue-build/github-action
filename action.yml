@@ -130,14 +130,11 @@ runs:
       env:
         CLI_VERSION_TAG: ${{ steps.build_vars.outputs.cli_version }}
       run: |
-        docker run \
-          --detach \
-          --rm \
+        docker create \
           --name blue-build-installer \
-          ghcr.io/blue-build/cli:${{ env.CLI_VERSION_TAG }}-installer \
-          tail -f /dev/null
+          ghcr.io/blue-build/cli:${{ env.CLI_VERSION_TAG }}-installer
         docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
-        docker stop -t 0 blue-build-installer
+        docker rm blue-build-installer
 
     # Required in order for docker buildx to
     # take advantage of the GHA cache API
