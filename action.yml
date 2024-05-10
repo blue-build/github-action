@@ -154,6 +154,8 @@ runs:
         GH_PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
         BB_BUILDKIT_CACHE_GHA: ${{ inputs.use_cache }}
         RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
+        RUST_LOG_STYLE: always
+        CLICOLOR_FORCE: '1'
       run: |
         bluebuild build -v --push ${RECIPE_PATH} \
           --registry ${{inputs.registry}} \
@@ -169,7 +171,10 @@ runs:
         GH_PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
         CLI_VERSION_TAG: ${{ steps.build_vars.outputs.cli_version }}
         RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
+        RUST_LOG_STYLE: always
+        CLICOLOR_FORCE: '1'
       run: |
+        which podman
         bluebuild build -v -B podman --squash --push ${RECIPE_PATH} \
           --registry ${{inputs.registry}} \
           --registry-namespace ${{inputs.registry_namespace}}
