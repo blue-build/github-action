@@ -177,7 +177,6 @@ runs:
         RUST_LOG_STYLE: always
         CLICOLOR_FORCE: '1'
       run: |
-        which podman
         bluebuild build -v -B podman --squash --push ${RECIPE_PATH} \
           --registry ${{inputs.registry}} \
           --registry-namespace ${{inputs.registry_namespace}}
