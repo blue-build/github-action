@@ -99,8 +99,8 @@ runs:
         sources_url="https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/unstable/xUbuntu_${ubuntu_version}"
         echo "deb $sources_url/ /" | sudo tee /etc/apt/sources.list.d/devel-kubic-libcontainers-unstable.list
         curl -fsSL $key_url | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/devel_kubic_libcontainers_unstable.gpg > /dev/null
-        apt-get update
-        apt-get install -y podman
+        sudo apt-get update
+        sudo apt-get install -y podman
 
     - uses: sigstore/cosign-installer@v3.5.0
 
