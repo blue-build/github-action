@@ -3,7 +3,7 @@ description: 'Build a custom OS image'
 inputs:
   recipe:
     description: |
-      The [recipe](https://blue-build.org/reference/recipe/) file to build the image from, relative to the `config/` directory.
+      The [recipe](https://blue-build.org/reference/recipe/) file to build the image from, relative to the `config/` or `recipes/` directory.
     required: true
     default: 'recipe.yml'
   cosign_private_key:
