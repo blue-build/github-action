@@ -149,7 +149,6 @@ runs:
     # blue-build/cli does the heavy lifting
     - name: Build Image
       shell: bash
-      if: ${{ inputs.squash != 'true' }}
       working-directory: ${{ inputs.working_directory }}
       env:
         COSIGN_PRIVATE_KEY: ${{ inputs.cosign_private_key }}
@@ -160,23 +159,12 @@ runs:
         RUST_LOG_STYLE: always
         CLICOLOR_FORCE: '1'
       run: |
-        bluebuild build -v --push ${RECIPE_PATH} \
-          --registry ${{inputs.registry}} \
-          --registry-namespace ${{inputs.registry_namespace}}
+        BUILD_OPTS=""
 
-    - name: Build Squashed Image
-      shell: bash
-      if: ${{ inputs.squash == 'true' }}
-      working-directory: ${{ inputs.working_directory }}
-      env:
-        COSIGN_PRIVATE_KEY: ${{ inputs.cosign_private_key }}
-        GH_TOKEN: ${{ inputs.registry_token }}
-        GH_PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
-        CLI_VERSION_TAG: ${{ steps.build_vars.outputs.cli_version }}
-        RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
-        RUST_LOG_STYLE: always
-        CLICOLOR_FORCE: '1'
-      run: |
-        bluebuild build -v -B podman --squash --push ${RECIPE_PATH} \
+        if [ "${{ inputs.squash }}" = "true" ]; then
+          BUILD_OPTS="--build-driver podman --squash $BUILD_OPTS"
+        fi
+
+        bluebuild build -v --push ${BUILD_OPTS} ${RECIPE_PATH} \
           --registry ${{inputs.registry}} \
           --registry-namespace ${{inputs.registry_namespace}}
