@@ -87,6 +87,23 @@ runs:
         driver: docker-container
         cache-binary: ${{ inputs.use_cache }}
 
+    # Installs the latest version of Podman
+    # that is compatible with BlueBuild
+    - name: Setup Podman
+      if: ${{ inputs.squash == 'true' }}
+      shell: bash
+      run: |
+        # from https://askubuntu.com/questions/1414446/whats-the-recommended-way-of-installing-podman-4-in-ubuntu-22-04
+        ubuntu_version='22.04'
+        key_url="https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/unstable/xUbuntu_${ubuntu_version}/Release.key"
+        sources_url="https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/unstable/xUbuntu_${ubuntu_version}"
+        echo "deb $sources_url/ /" | sudo tee /etc/apt/sources.list.d/devel-kubic-libcontainers-unstable.list
+        curl -fsSL $key_url | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/devel_kubic_libcontainers_unstable.gpg > /dev/null
+        sudo apt-get update
+        sudo apt-get install -y podman
+
+    - uses: sigstore/cosign-installer@v3.5.0
+
     # clones user's repo
     - uses: actions/checkout@v4
 
@@ -113,21 +130,14 @@ runs:
 
     - name: Install BlueBuild
       shell: bash
-      if: ${{ inputs.squash != 'true' }}
       env:
         CLI_VERSION_TAG: ${{ steps.build_vars.outputs.cli_version }}
       run: |
-        docker run \
-          --detach \
-          --rm \
+        docker create \
           --name blue-build-installer \
-          ghcr.io/blue-build/cli:${{ env.CLI_VERSION_TAG }}-installer \
-          tail -f /dev/null
+          ghcr.io/blue-build/cli:${{ env.CLI_VERSION_TAG }}-installer
         docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
-        docker stop -t 0 blue-build-installer
-
-    - uses: sigstore/cosign-installer@v3.5.0
-      if: ${{ inputs.squash != 'true' }}
+        docker rm blue-build-installer
 
     # Required in order for docker buildx to
     # take advantage of the GHA cache API
@@ -139,7 +149,6 @@ runs:
     # blue-build/cli does the heavy lifting
     - name: Build Image
       shell: bash
-      if: ${{ inputs.squash != 'true' }}
       working-directory: ${{ inputs.working_directory }}
       env:
         COSIGN_PRIVATE_KEY: ${{ inputs.cosign_private_key }}
@@ -147,32 +156,15 @@ runs:
         GH_PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
         BB_BUILDKIT_CACHE_GHA: ${{ inputs.use_cache }}
         RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
+        RUST_LOG_STYLE: always
+        CLICOLOR_FORCE: '1'
       run: |
-        bluebuild build -v --push ${RECIPE_PATH} \
-          --registry ${{inputs.registry}} \
-          --registry-namespace ${{inputs.registry_namespace}}
+        BUILD_OPTS=""
 
-    - name: Build Squashed Image
-      shell: bash
-      if: ${{ inputs.squash == 'true' }}
-      working-directory: ${{ inputs.working_directory }}
-      env:
-        COSIGN_PRIVATE_KEY: ${{ inputs.cosign_private_key }}
-        GH_TOKEN: ${{ inputs.registry_token }}
-        GH_PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
-        CLI_VERSION_TAG: ${{ steps.build_vars.outputs.cli_version }}
-        RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
-      run: |
-        podman run \
-          -v buildah-imagestores:/usr/lib/containers/storage \
-          -v buildah-graphroot:/var/lib/containers/storage \
-          -v buildah-runroot:/run/containers/storage \
-          -v $PWD:/bluebuild \
-          --env-host \
-          --network=host \
-          --privileged \
-          --device /dev/fuse \
-          ghcr.io/blue-build/cli:${CLI_VERSION_TAG}-alpine \
-          build -v -B buildah --squash --push ${RECIPE_PATH} \
+        if [ "${{ inputs.squash }}" = "true" ]; then
+          BUILD_OPTS="--build-driver podman --squash $BUILD_OPTS"
+        fi
+
+        bluebuild build -v --push ${BUILD_OPTS} ${RECIPE_PATH} \
           --registry ${{inputs.registry}} \
           --registry-namespace ${{inputs.registry_namespace}}
