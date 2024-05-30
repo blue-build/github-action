@@ -17,7 +17,13 @@ inputs:
       The token used to sign into the container registry.
 
       Example: `&#36;{{ github.token }}`
-    required: true
+    required: false
+    default: ''
+  registry_username:
+    description: | 
+      The username used to sign into the container registry.
+    required: false
+    default: ${{ github.repository_owner }}
   pr_event_number:
     description: |
       The event number used to tag images pushed from pull requests.
@@ -160,6 +166,10 @@ runs:
       env:
         COSIGN_PRIVATE_KEY: ${{ inputs.cosign_private_key }}
         GH_TOKEN: ${{ inputs.registry_token }}
+        BB_PASSWORD: ${{ inputs.registry_token }}
+        BB_USERNAME: ${{ inputs.registry_username }}
+        BB_REGISTRY: ${{ inputs.registry }}
+        BB_REGISTRY_NAMESPACE: ${{ inputs.registry_namespace }}
         GH_PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
         BB_BUILDKIT_CACHE_GHA: ${{ inputs.use_cache }}
         RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
@@ -172,6 +182,4 @@ runs:
           BUILD_OPTS="--build-driver podman --squash $BUILD_OPTS"
         fi
 
-        bluebuild build -v --push ${BUILD_OPTS} ${RECIPE_PATH} \
-          --registry ${{inputs.registry}} \
-          --registry-namespace ${{inputs.registry_namespace}}
+        bluebuild build -v --push ${BUILD_OPTS} ${RECIPE_PATH}
