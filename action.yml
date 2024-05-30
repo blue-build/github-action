@@ -144,6 +144,7 @@ runs:
           ghcr.io/blue-build/cli:${{ env.CLI_VERSION_TAG }}-installer
         docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
         docker rm blue-build-installer
+        bluebuild --version
 
     # Required in order for docker buildx to
     # take advantage of the GHA cache API
