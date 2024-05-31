@@ -44,6 +44,10 @@ inputs:
       Input must match the string 'true' for the unstable version to be used.
     required: false
     default: 'false'
+  cli_version:
+    description: |
+      Set this with a tag, sha, or branch name for the blue-build/cli repo to use that particular version of the CLI tool. This will override the `use_unstable_cli` input for the action.
+    required: false
   registry:
     description: |
       The container registry to push the built image to.
@@ -119,8 +123,10 @@ runs:
       env:
         RECIPE: ${{ inputs.recipe }}
       run: |
-        if [[ "${{ inputs.use_unstable_cli }}" == "true" ]]; then
+        if [[ "${{ inputs.use_unstable_cli }}" == "true" && -z "${{ inputs.cli_version }}" ]]; then
           CLI_VERSION_TAG="main"
+        elif [ -n "${{ inputs.cli_version }}" ]; then
+          CLI_VERSION_TAG="${{ inputs.cli_version }}"
         else
           CLI_VERSION_TAG="v0.8"
         fi
@@ -144,6 +150,7 @@ runs:
           ghcr.io/blue-build/cli:${{ env.CLI_VERSION_TAG }}-installer
         docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
         docker rm blue-build-installer
+        bluebuild --version
 
     # Required in order for docker buildx to
     # take advantage of the GHA cache API
