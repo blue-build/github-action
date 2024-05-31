@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.6.0](https://github.com/blue-build/github-action/compare/v1.5.0...v1.6.0) (2024-05-31)
+
+
+### Features
+
+* Add support for specifying a specific version of the CLI ([#51](https://github.com/blue-build/github-action/issues/51)) ([91ad95d](https://github.com/blue-build/github-action/commit/91ad95da3fc3d7c3b943d4f8a99d8d0e82b5c487))
+* support changing working directory ([#43](https://github.com/blue-build/github-action/issues/43)) ([41cfe24](https://github.com/blue-build/github-action/commit/41cfe244bfef69c4db5f7bfdec021aa98d642fb8))
+
+
+### Bug Fixes
+
+* Allow no token to be passed in ([#49](https://github.com/blue-build/github-action/issues/49)) ([c4592d4](https://github.com/blue-build/github-action/commit/c4592d42e43b763c8d68c67947db14b8b6baeb56))
+
 ## [1.5.0](https://github.com/blue-build/github-action/compare/v1.4.0...v1.5.0) (2024-05-01)
 
 
