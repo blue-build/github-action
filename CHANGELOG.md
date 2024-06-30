@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.1](https://github.com/blue-build/github-action/compare/v1.6.0...v1.6.1) (2024-06-30)
+
+
+### Bug Fixes
+
+* Default maximize_build_space to true ([#54](https://github.com/blue-build/github-action/issues/54)) ([bf3f2a9](https://github.com/blue-build/github-action/commit/bf3f2a94b58b134c47edf329e49d222f17480438))
+
 ## [1.6.0](https://github.com/blue-build/github-action/compare/v1.5.0...v1.6.0) (2024-05-31)
 
 
