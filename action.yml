@@ -111,7 +111,7 @@ runs:
         sudo apt-get update
         sudo apt-get install -y podman
 
-    - uses: sigstore/cosign-installer@v3.5.0
+    - uses: sigstore/cosign-installer@v3.7.0
 
     # clones user's repo
     - uses: actions/checkout@v4
