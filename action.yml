@@ -96,10 +96,17 @@ runs:
         driver: docker-container
         cache-binary: ${{ inputs.use_cache }}
 
-    # Installs the latest version of Podman
+    - name: Get Ubuntu version
+      id: ubuntu_version
+      shell: bash
+      run: |
+        VERSION=$(awk -F= '/^VERSION_ID=/ {gsub(/"/, "", $2); print $2}' /etc/os-release)
+        echo "Ubuntu version is $VERSION"
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+
     # that is compatible with BlueBuild
     - name: Setup Podman
-      if: ${{ inputs.squash == 'true' }}
+      if: ${{ inputs.squash == 'true' && steps.ubuntu_version.outputs.version == '22.04' }}
       shell: bash
       run: |
         # from https://askubuntu.com/questions/1414446/whats-the-recommended-way-of-installing-podman-4-in-ubuntu-22-04
