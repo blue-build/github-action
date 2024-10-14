@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.2](https://github.com/blue-build/github-action/compare/v1.6.1...v1.6.2) (2024-10-14)
+
+
+### Bug Fixes
+
+* Only install podman from opensuse repo if Ubuntu is 22.04 ([#59](https://github.com/blue-build/github-action/issues/59)) ([5fc9194](https://github.com/blue-build/github-action/commit/5fc919404609cec4aae8d4b86809cef2ba84bf36))
+
 ## [1.6.1](https://github.com/blue-build/github-action/compare/v1.6.0...v1.6.1) (2024-06-30)
 
 
