@@ -78,6 +78,13 @@ inputs:
       For example, setting this to `./abc/` would cause for the recipe to be read from `./abc/recipes/recipe.yml`.
     required: false
     default: ./
+  skip_checkout:
+      description: |
+        Set to true to skip doing the actions/checkout step.
+        This allows you to checkout before calling bluebuild/github-action and modify files
+        (such as supplying build information to other scripts) before building.
+      required: false
+      default: 'false'
 
 runs:
   using: "composite"
@@ -122,6 +129,7 @@ runs:
 
     # clones user's repo
     - uses: actions/checkout@v4
+      if: ${{ inputs.skip_checkout == 'false' }}
 
     - name: Determine Vars
       id: build_vars
