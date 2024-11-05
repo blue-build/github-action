@@ -81,8 +81,8 @@ inputs:
   skip_checkout:
       description: |
         Set to true to skip doing the actions/checkout step.
-        This allows you to checkout before calling bluebuild/github-action and modify files
-        (such as supplying build information to other scripts) before building.
+        This allows you to checkout manually before calling bluebuild/github-action
+        and to modify files (such as supplying build information to other scripts) before building.
       required: false
       default: 'false'
 
