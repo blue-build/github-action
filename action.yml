@@ -69,9 +69,16 @@ inputs:
   squash:
     description: |
       Uses buildah to squash the build's layers into a single layer. Use of this option
-      disables cache.
+      disables cache. Conflicts with adding --build-driver or --squash to the build opts.
     required: false
     default: 'false'
+  build_opts:
+    description: |
+      Provides options to the call to the call to bluebuild build. If you use with
+      the squash input set to true and provide a --build-driver or --squash option
+      an error will occur and the action will not run.
+    required: false
+    default: ' '
   working_directory:
     description: |
       Changes working directory for whole build.
@@ -89,6 +96,12 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Validate inputs
+      shell: bash
+      run: "${{ github.action_path }}/build_opts_check.sh"
+      env:
+        SQUASH_INPUT_VALUE: "${{ inputs.squash }}"
+        BUILD_OPTS: "${{ inputs.build_opts }}"
     # building custom images might take a lot of space, 
     # so it's best to remove unneeded softawre
     - name: Maximize build space
@@ -189,9 +202,8 @@ runs:
         RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
         RUST_LOG_STYLE: always
         CLICOLOR_FORCE: '1'
+        BUILD_OPTS: ${{ inputs.build_opts }}
       run: |
-        BUILD_OPTS=""
-
         if [ "${{ inputs.squash }}" = "true" ]; then
           BUILD_OPTS="--build-driver podman --squash $BUILD_OPTS"
         fi
