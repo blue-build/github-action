@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
 # Expected env vars:
 # SQUASH_INPUT_VALUE
