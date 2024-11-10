@@ -74,8 +74,8 @@ inputs:
     default: 'false'
   build_opts:
     description: |
-      Provides options to the call to the call to bluebuild build. If you use with
-      the squash input set to true and provide a --build-driver or --squash option
+      Provide options to the call to the BlueBuild CLI build command. If you use this with
+      the squash input set to true and provide either of the --build-driver or --squash flags
       an error will occur and the action will not run.
     required: false
     default: ' '
