@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.0](https://github.com/blue-build/github-action/compare/v1.6.2...v1.7.0) (2024-11-11)
+
+
+### Features
+
+* allow providing options to `bluebuild build` command ([#63](https://github.com/blue-build/github-action/issues/63)) ([acae198](https://github.com/blue-build/github-action/commit/acae19810203662c3221286bb6bbb789061efab2))
+* allow skipping the checkout step ([#61](https://github.com/blue-build/github-action/issues/61)) ([b032506](https://github.com/blue-build/github-action/commit/b032506226a640040c6fef03d004757d4b3b2184))
+
 ## [1.6.2](https://github.com/blue-build/github-action/compare/v1.6.1...v1.6.2) (2024-10-14)
 
 
