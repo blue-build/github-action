@@ -217,4 +217,4 @@ runs:
           BUILD_OPTS="--rechunk $BUILD_OPTS"
         fi
 
-        bluebuild build -v --push ${BUILD_OPTS} ${RECIPE_PATH}
+        sudo bluebuild build -v --push ${BUILD_OPTS} ${RECIPE_PATH}
