@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://github.com/blue-build/github-action/compare/v1.7.0...v1.8.0) (2024-12-03)
+
+
+### Features
+
+* rechunk support ([#69](https://github.com/blue-build/github-action/issues/69)) ([848d8e8](https://github.com/blue-build/github-action/commit/848d8e8e07705afb749590134658b7d1497af0d6))
+
 ## [1.7.0](https://github.com/blue-build/github-action/compare/v1.6.2...v1.7.0) (2024-11-11)
 
 
