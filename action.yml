@@ -65,7 +65,7 @@ inputs:
 
       Will make your builds considerably slower. This is an experimental option, as it can cause issues with file permissions in some scenarios, so enable on your own risk.
 
-      Uses `--squash` build opt to further reduce the image size.
+      Internally builds squashed images with podman to further reduce the image size.
     required: false
     default: "false"
   use_cache:
