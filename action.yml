@@ -63,7 +63,7 @@ inputs:
     description: |
       Rechunk the ostree-based result images with [github.com/hhd-dev/rechunk](https://github.com/hhd-dev/rechunk) for more efficient diffs and updates. (lower image size, better download speed, better update resuming)
 
-      Will make your builds considerably slower. Feel free to only enable this when not actively developing your image.
+      Will make your builds considerably slower. This is an experimental option, as it can cause issues with file permissions in some scenarios, so enable it on your own behalf.
     required: false
     default: "false"
   use_cache:
