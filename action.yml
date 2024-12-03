@@ -117,7 +117,7 @@ runs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
-      if: ${{ inputs.squash != 'true' }}
+      if: ${{ inputs.squash != 'true' && inputs.rechunk != 'true' }}
       with:
         install: true
         driver: docker-container
@@ -133,7 +133,7 @@ runs:
 
     # that is compatible with BlueBuild
     - name: Setup Podman
-      if: ${{ inputs.squash == 'true' && steps.ubuntu_version.outputs.version == '22.04' }}
+      if: ${{ (inputs.squash == 'true' || inputs.rechunk == 'true') && steps.ubuntu_version.outputs.version == '22.04' }}
       shell: bash
       run: |
         # from https://askubuntu.com/questions/1414446/whats-the-recommended-way-of-installing-podman-4-in-ubuntu-22-04
@@ -162,7 +162,7 @@ runs:
         elif [ -n "${{ inputs.cli_version }}" ]; then
           CLI_VERSION_TAG="${{ inputs.cli_version }}"
         else
-          CLI_VERSION_TAG="v0.8"
+          CLI_VERSION_TAG="v0.9"
         fi
         echo "cli_version=${CLI_VERSION_TAG}" >> ${GITHUB_OUTPUT}
 
@@ -179,17 +179,17 @@ runs:
       env:
         CLI_VERSION_TAG: ${{ steps.build_vars.outputs.cli_version }}
       run: |
-        docker create \
+        sudo docker create \
           --name blue-build-installer \
           ghcr.io/blue-build/cli:${{ env.CLI_VERSION_TAG }}-installer
-        docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
-        docker rm blue-build-installer
+        sudo docker cp blue-build-installer:/out/bluebuild /usr/bin/bluebuild
+        sudo docker rm blue-build-installer
         bluebuild --version
 
     # Required in order for docker buildx to
     # take advantage of the GHA cache API
     - name: Expose GitHub Runtime
-      if: ${{ inputs.use_cache == 'true' && inputs.squash != 'true' }}
+      if: ${{ inputs.use_cache == 'true' && inputs.squash != 'true' && inputs.rechunk != 'true' }}
       uses: crazy-max/ghaction-github-runtime@v3
 
     # blue-build/cli does the heavy lifting
@@ -213,8 +213,15 @@ runs:
         if [ "${{ inputs.squash }}" = "true" ]; then
           BUILD_OPTS="--build-driver podman --squash $BUILD_OPTS"
         fi
+
+        RUN_SUDO=""
         if [ "${{ inputs.rechunk }}" = "true" ]; then
+          RUN_SUDO=1
           BUILD_OPTS="--rechunk $BUILD_OPTS"
         fi
 
-        sudo bluebuild build -v --push ${BUILD_OPTS} ${RECIPE_PATH}
+        if [ -n "$RUN_SUDO" ]; then
+          sudo bluebuild build -v --push ${BUILD_OPTS} ${RECIPE_PATH}
+        else
+          bluebuild build -v --push ${BUILD_OPTS} ${RECIPE_PATH}
+        fi
