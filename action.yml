@@ -146,6 +146,9 @@ runs:
         sudo apt-get install -y podman
 
     - uses: sigstore/cosign-installer@v3.7.0
+      with:
+        install-dir: /usr/bin
+        use-sudo: true
 
     # clones user's repo
     - uses: actions/checkout@v4
