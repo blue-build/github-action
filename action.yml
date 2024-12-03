@@ -64,6 +64,8 @@ inputs:
       Rechunk the ostree-based result images with [github.com/hhd-dev/rechunk](https://github.com/hhd-dev/rechunk) for more efficient diffs and updates. (lower image size, better download speed, better update resuming)
 
       Will make your builds considerably slower. This is an experimental option, as it can cause issues with file permissions in some scenarios, so enable it on your own behalf.
+
+      Uses `--squash` build opt to further reduce the image size.
     required: false
     default: "false"
   use_cache:
@@ -76,13 +78,13 @@ inputs:
   squash:
     description: |
       Uses buildah to squash the build's layers into a single layer. Use of this option
-      disables cache. Conflicts with adding --build-driver or --squash to the build opts.
+      disables cache. Conflicts with adding `--build-driver` or `--squash` to the build opts.
     required: false
     default: "false"
   build_opts:
     description: |
       Provide options to the call to the BlueBuild CLI build command. If you use this with
-      the squash input set to true and provide either of the --build-driver or --squash flags
+      the squash input set to true and provide either of the `--build-driver` or `--squash` flags
       an error will occur and the action will not run.
     required: false
     default: " "
