@@ -5,8 +5,9 @@ set -euo pipefail
 # SQUASH_INPUT_VALUE
 # BUILD_OPTS
 
-# check_build_opts option1 option2 error_message
+# check_build_opts "option1" "option2" "error_message"
 # If you have only 1 option to provide, provide '---' string as 2nd placeholder option
+# check_build_opts "option1" --- "error_message"
 check_build_opts() {
     local option1="${1}"
     local option2="${2}"
