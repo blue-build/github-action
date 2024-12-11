@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1](https://github.com/blue-build/github-action/compare/v1.8.0...v1.8.1) (2024-12-11)
+
+
+### Bug Fixes
+
+* Check for user-provided `build_opts` ([#71](https://github.com/blue-build/github-action/issues/71)) ([b22398a](https://github.com/blue-build/github-action/commit/b22398aebb0d99f2a615f3aea68bb1851b924f7e))
+
 ## [1.8.0](https://github.com/blue-build/github-action/compare/v1.7.0...v1.8.0) (2024-12-03)
 
 
