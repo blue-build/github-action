@@ -70,9 +70,7 @@ inputs:
     default: "false"
   use_cache:
     description: |
-      Make use of docker buildx cache. This is an experimental feature of docker buildx
-      so it isn't guaranteed to work.
-      Input must match the string 'true' for the step to be enabled.
+      Make use of layer cache by pushing the layers to the registry. Input must match the string 'true' for the step to be enabled.
     required: false
     default: "true"
   squash:
@@ -191,12 +189,6 @@ runs:
         sudo docker rm blue-build-installer
         bluebuild --version
 
-    # Required in order for docker buildx to
-    # take advantage of the GHA cache API
-    - name: Expose GitHub Runtime
-      if: ${{ inputs.use_cache == 'true' && inputs.squash != 'true' && inputs.rechunk != 'true' }}
-      uses: crazy-max/ghaction-github-runtime@v3
-
     # blue-build/cli does the heavy lifting
     - name: Build Image
       shell: bash
@@ -209,7 +201,7 @@ runs:
         BB_REGISTRY: ${{ inputs.registry }}
         BB_REGISTRY_NAMESPACE: ${{ inputs.registry_namespace }}
         GH_PR_EVENT_NUMBER: ${{ inputs.pr_event_number }}
-        BB_BUILDKIT_CACHE_GHA: ${{ inputs.use_cache }}
+        BB_CACHE_LAYERS: ${{ inputs.use_cache }}
         RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
         RUST_LOG_STYLE: always
         CLICOLOR_FORCE: "1"
