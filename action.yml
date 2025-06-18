@@ -112,11 +112,11 @@ runs:
     # building custom images might take a lot of space,
     # so it's best to remove unneeded softawre
     - name: Maximize build space
-      uses: jlumbroso/free-disk-space@v1.3.1
+      uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
       if: ${{ inputs.maximize_build_space == 'true' }}
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      uses: docker/setup-buildx-action@18ce135bb5112fa8ce4ed6c17ab05699d7f3a5e0 # v3.11.0
       if: ${{ inputs.squash != 'true' && inputs.rechunk != 'true' }}
       with:
         install: true
@@ -145,13 +145,13 @@ runs:
         sudo apt-get update
         sudo apt-get install -y podman
 
-    - uses: sigstore/cosign-installer@v3.8.2
+    - uses: sigstore/cosign-installer@sigstore/cosign-installer # v3.9.0
       with:
         install-dir: /usr/bin
         use-sudo: true
 
     # clones user's repo
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       if: ${{ inputs.skip_checkout == 'false' }}
 
     - name: Determine Vars
