@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.2](https://github.com/blue-build/github-action/compare/v1.8.1...v1.8.2) (2025-06-22)
+
+
+### Bug Fixes
+
+* cosign version installer tag ([695be33](https://github.com/blue-build/github-action/commit/695be33a3961f2860463c9974639e8c2a44982cd))
+
 ## [1.8.1](https://github.com/blue-build/github-action/compare/v1.8.0...v1.8.1) (2024-12-11)
 
 
