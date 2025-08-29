@@ -26,7 +26,7 @@ check_build_opts() {
     fi
 }
 
-if [[ "${SQUASH_INPUT_VALUE}" != "true" ]]; then
+if [[ "${SQUASH_INPUT_VALUE}" == "true" ]]; then
   check_build_opts "-B" "--build-driver" "Cannot provide '--build-driver' in build_opts while 'squash' is set to true."
   check_build_opts "-s" "--squash" "Cannot provide '--squash' in build_opts while 'squash' is set to true."
 fi
