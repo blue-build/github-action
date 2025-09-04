@@ -222,7 +222,7 @@ runs:
         CLICOLOR_FORCE: "1"
         BUILD_OPTS: ${{ inputs.build_opts }}
       run: |
-        IFS=" " read -r -a BUILD_OPTS <<< "${BUILD_OPTS}"
+        read -r -a BUILD_OPTS <<< "${BUILD_OPTS}"
         if [ "${BB_SQUASH}" = "true" ]; then
           BUILD_OPTS+=("--build-driver" "podman" "--squash")
         fi
