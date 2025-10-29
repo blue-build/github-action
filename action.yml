@@ -163,6 +163,7 @@ runs:
         install-dir: /usr/bin
         use-sudo: true
 
+    # clones user's repo
     - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       if: ${{ inputs.skip_checkout == 'false' }}
       with:
