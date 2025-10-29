@@ -194,6 +194,9 @@ runs:
       env:
         CLI_VERSION_TAG: ${{ steps.build_vars.outputs.cli_version }}
       run: |
+        set -euo pipefail
+        curl -L -O https://raw.githubusercontent.com/blue-build/cli/refs/heads/main/cosign.pub
+        cosign verify --key cosign.pub "ghcr.io/blue-build/cli:${CLI_VERSION_TAG}-installer"
         sudo docker create \
           --name blue-build-installer \
           "ghcr.io/blue-build/cli:${CLI_VERSION_TAG}-installer"
