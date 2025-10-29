@@ -104,6 +104,11 @@ inputs:
       and to modify files (such as supplying build information to other scripts) before building.
     required: false
     default: "false"
+  cosign_verify_cli:
+    description: |
+      Set to true verify the cosign signature for the Blue-Build cli
+    required: false
+    default: "false"
 
 runs:
   using: "composite"
@@ -158,11 +163,27 @@ runs:
         install-dir: /usr/bin
         use-sudo: true
 
-    # clones user's repo
-    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-      if: ${{ inputs.skip_checkout == 'false' }}
-      with:
-        persist-credentials: false
+    - name: Set container policy to validate Blue-Build cli signature
+      if: ${{ inputs.cosign_verify_cli == 'true' }}
+      shell: bash
+      run: |
+        POLICY_FILE="/etc/containers/policy.json"
+        IMAGE_REGISTRY="ghcr.io/blue-build"
+        IMAGE_PUBKEY="/etc/pki/containers/blue-build.pub"
+        sudo curl -Lo "${IMAGE_PUBKEY}" https://raw.githubusercontent.com/blue-build/cli/refs/heads/main/cosign.pub
+        jq --arg image_registry "${IMAGE_REGISTRY}" \
+           --arg image_pubkey "${IMAGE_PUBKEY}" \
+           '.transports.docker |= 
+            { $image_registry: [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": $image_pubkey,
+                    "signedIdentity": {
+                        "type": "matchRepository"
+                    }
+                }
+            ] } + .' "${POLICY_FILE}" > POLICY.tmp
+        sudo mv POLICY.tmp "${POLICY_FILE}"
 
     - name: Determine Vars
       id: build_vars
@@ -188,6 +209,11 @@ runs:
           RECIPE_PATH="./recipes/${RECIPE}"
         fi
         echo "recipe_path=${RECIPE_PATH}" >> "${GITHUB_OUTPUT}"
+
+    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      if: ${{ inputs.skip_checkout == 'false' }}
+      with:
+        persist-credentials: false
 
     - name: Install BlueBuild
       shell: bash
