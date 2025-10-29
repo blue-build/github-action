@@ -174,11 +174,31 @@ runs:
       shell: bash
       run: |
         POLICY_FILE="/etc/containers/policy.json"
-        IMAGE_REGISTRY="ghcr.io/blue-build"
-        IMAGE_PUBKEY="/etc/pki/containers/blue-build.pub"
-        sudo curl -Lo "${IMAGE_PUBKEY}" https://raw.githubusercontent.com/blue-build/cli/refs/heads/main/cosign.pub
-        jq --arg image_registry "${IMAGE_REGISTRY}" \
-           --arg image_pubkey "${IMAGE_PUBKEY}" \
+        CLI_IMAGE_REGISTRY="ghcr.io/blue-build/cli"
+        MODULES_IMAGE_REGISTRY="ghcr.io/blue-build/modules"
+        CLI_IMAGE_PUBKEY="/etc/pki/containers/blue-build-cli.pub"
+        MODULES_IMAGE_PUBKEY="/etc/pki/containers/blue-build-cli.pub"
+        sudo curl -Lo "${CLI_IMAGE_PUBKEY}" https://raw.githubusercontent.com/blue-build/cli/refs/heads/main/cosign.pub
+        sudo curl -Lo "${MODULES_IMAGE_PUBKEY}" https://raw.githubusercontent.com/blue-build/modules/refs/heads/main/cosign.pub
+
+        # add cli pubkey
+        jq --arg image_registry "${CLI_IMAGE_REGISTRY}" \
+           --arg image_pubkey "${CLI_IMAGE_PUBKEY}" \
+           '.transports.docker |= 
+            { $image_registry: [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": $image_pubkey,
+                    "signedIdentity": {
+                        "type": "matchRepository"
+                    }
+                }
+            ] } + .' "${POLICY_FILE}" > POLICY.tmp
+        sudo mv POLICY.tmp "${POLICY_FILE}"
+        
+        # add modules pubkey
+        jq --arg image_registry "${MODULES_IMAGE_REGISTRY}" \
+           --arg image_pubkey "${MODULES_IMAGE_PUBKEY}" \
            '.transports.docker |= 
             { $image_registry: [
                 {
