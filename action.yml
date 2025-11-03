@@ -177,7 +177,7 @@ runs:
         CLI_IMAGE_REGISTRY="ghcr.io/blue-build/cli"
         MODULES_IMAGE_REGISTRY="ghcr.io/blue-build/modules"
         CLI_IMAGE_PUBKEY="/etc/pki/containers/blue-build-cli.pub"
-        MODULES_IMAGE_PUBKEY="/etc/pki/containers/blue-build-cli.pub"
+        MODULES_IMAGE_PUBKEY="/etc/pki/containers/blue-build-modules.pub"
         sudo curl -Lo "${CLI_IMAGE_PUBKEY}" https://raw.githubusercontent.com/blue-build/cli/refs/heads/main/cosign.pub
         sudo curl -Lo "${MODULES_IMAGE_PUBKEY}" https://raw.githubusercontent.com/blue-build/modules/refs/heads/main/cosign.pub
 
