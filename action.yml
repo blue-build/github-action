@@ -164,6 +164,7 @@ runs:
         use-sudo: true
 
     - name: Install the slsa-verifier
+      if: ${{ inputs.verify_install == 'true' }}
       uses: slsa-framework/slsa-verifier/actions/installer@ea584f4502babc6f60d9bc799dbbb13c1caa9ee6 # v2.7.1
 
     # clones user's repo
