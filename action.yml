@@ -104,7 +104,7 @@ inputs:
       and to modify files (such as supplying build information to other scripts) before building.
     required: false
     default: "false"
-  cosign_verify_cli:
+  verify_install:
     description: |
       Set to true verify the cosign signature for the Blue-Build cli
     required: false
@@ -173,7 +173,7 @@ runs:
         persist-credentials: false
 
     - name: Set container policy to validate Blue-Build cli signature
-      if: ${{ inputs.cosign_verify_cli == 'true' }}
+      if: ${{ inputs.verify_install == 'true' }}
       shell: bash
       run: |
         POLICY_FILE="/etc/containers/policy.json"
@@ -253,12 +253,16 @@ runs:
         CLI_VERSION_TAG: ${{ steps.build_vars.outputs.cli_version }}
         REPO_TAG: ${{ steps.build_vars.outputs.repo_tag }}
         VERIFY_FLAG: ${{ steps.build_vars.outputs.verify_flag }}
+        VERIFY_INSTALL: ${{ inputs.verify_install }}
       run: |
         set -euo pipefail
         CLI_INSTALLER_IMAGE="ghcr.io/blue-build/cli:${CLI_VERSION_TAG}-installer"
-        slsa-verifier verify-image "${CLI_INSTALLER_IMAGE}" \
-            --source-uri github.com/blue-build/cli \
-            "${VERIFY_FLAG}"" "${REPO_TAG}"
+        if [ "$VERIFY_INSTALL" = "true" ]; then
+          CLI_INSTALLER_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' "${CLI_INSTALLER_IMAGE}")
+          slsa-verifier verify-image "${CLI_INSTALLER_IMAGE}" \
+              --source-uri github.com/blue-build/cli \
+              "${VERIFY_FLAG}" "${REPO_TAG}"
+        fi
         sudo docker create \
           --name blue-build-installer \
           "${CLI_INSTALLER_IMAGE}"
