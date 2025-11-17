@@ -259,6 +259,7 @@ runs:
         set -euo pipefail
         CLI_INSTALLER_IMAGE="ghcr.io/blue-build/cli:${CLI_VERSION_TAG}-installer"
         if [ "$VERIFY_INSTALL" = "true" ]; then
+          docker pull "${CLI_INSTALLER_IMAGE}"
           CLI_INSTALLER_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' "${CLI_INSTALLER_IMAGE}")
           slsa-verifier verify-image "${CLI_INSTALLER_IMAGE}" \
               --source-uri github.com/blue-build/cli \
