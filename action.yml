@@ -163,6 +163,9 @@ runs:
         install-dir: /usr/bin
         use-sudo: true
 
+    - name: Install the slsa-verifier
+      uses: slsa-framework/slsa-verifier/actions/installer@ea584f4502babc6f60d9bc799dbbb13c1caa9ee6 # v2.7.1
+
     # clones user's repo
     - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       if: ${{ inputs.skip_checkout == 'false' }}
@@ -221,12 +224,20 @@ runs:
       run: |
         if [[ "${USE_UNSTABLE_CLI}" == "true" && -z "${CLI_VERSION}" ]]; then
           CLI_VERSION_TAG="main"
+          REPO_TAG="main"
+          VERIFY_FLAG="--source-branch"
         elif [ -n "${CLI_VERSION}" ]; then
           CLI_VERSION_TAG="${CLI_VERSION}"
+          REPO_TAG="${CLI_VERSION}"
+          VERIFY_FLAG="--source-tag"
         else
+          REPO_TAG=$(curl -s https://api.github.com/repos/blue-build/cli/tags | jq -r '.[0].name')
           CLI_VERSION_TAG="v0.9"
+          VERIFY_FLAG="--source-tag"
         fi
         echo "cli_version=${CLI_VERSION_TAG}" >> "${GITHUB_OUTPUT}"
+        echo "repo_tag=${REPO_TAG}" >> "${GITHUB_OUTPUT}"
+        echo "verify_flag=${VERIFY_FLAG}" >> "${GITHUB_OUTPUT}"
 
         RECIPE_PATH=""
         if [ -f "./config/${RECIPE}" ]; then
@@ -240,10 +251,17 @@ runs:
       shell: bash
       env:
         CLI_VERSION_TAG: ${{ steps.build_vars.outputs.cli_version }}
+        REPO_TAG: ${{ steps.build_vars.outputs.repo_tag }}
+        VERIFY_FLAG: ${{ steps.build_vars.outputs.verify_flag }}
       run: |
+        set -euo pipefail
+        CLI_INSTALLER_IMAGE="ghcr.io/blue-build/cli:${CLI_VERSION_TAG}-installer"
+        slsa-verifier verify-image "${CLI_INSTALLER_IMAGE}" \
+            --source-uri github.com/blue-build/cli \
+            "${VERIFY_FLAG}"" "${REPO_TAG}"
         sudo docker create \
           --name blue-build-installer \
-          "ghcr.io/blue-build/cli:${CLI_VERSION_TAG}-installer"
+          "${CLI_INSTALLER_IMAGE}"
         sudo docker cp blue-build-installer:/out/bluebuild /usr/bin/bluebuild
         sudo docker rm blue-build-installer
         bluebuild --version
