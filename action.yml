@@ -214,6 +214,7 @@ runs:
                 }
             ] } + .' "${POLICY_FILE}" > POLICY.tmp
         sudo mv POLICY.tmp "${POLICY_FILE}"
+        sed -i 's/insecureAcceptAnything/reject/g' "${POLICY_FILE}"
 
     - name: Determine Vars
       id: build_vars
