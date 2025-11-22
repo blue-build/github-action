@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.10.0](https://github.com/blue-build/github-action/compare/v1.9.1...v1.10.0) (2025-11-22)
+
+
+### Features
+
+* add options for build-chunked-oci ([#106](https://github.com/blue-build/github-action/issues/106)) ([07ff155](https://github.com/blue-build/github-action/commit/07ff1552f835c213bcb3d580a7178182874dcdde))
+* add provenance verification ([#107](https://github.com/blue-build/github-action/issues/107)) ([5ff2e30](https://github.com/blue-build/github-action/commit/5ff2e30c5a437f552d999f735013c70f01204e9f))
+* set container policy to validate Blue-Build cli signature ([#105](https://github.com/blue-build/github-action/issues/105)) ([c1c1e56](https://github.com/blue-build/github-action/commit/c1c1e56702055fb24f60660162e670203f977195))
+
+
+### Bug Fixes
+
+* missing pubkey dir ([#109](https://github.com/blue-build/github-action/issues/109)) ([9c9c416](https://github.com/blue-build/github-action/commit/9c9c416c3ba9b043b01821496592224177ba3c49))
+
 ## [1.9.1](https://github.com/blue-build/github-action/compare/v1.9.0...v1.9.1) (2025-09-04)
 
 
