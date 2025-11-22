@@ -59,13 +59,25 @@ inputs:
       Example: `ublue-os`
     required: false
     default: ${{ github.repository_owner }}
+  build_chunked_oci:
+    description: |
+      Uses `rpm-ostree compose build-chunked-oci` to rechunk the image, allowing for smaller images and smaller updates.
+
+      This will increase the build-time and take up more space during build-time.
+    required: false
+    default: "false"
+  max_layers:
+    description: |
+      Maximum number of layers to use when rechunking with `build-chunked-oci`.
+    required: false
+    default: 128
   rechunk:
     description: |
       Rechunk the ostree-based result images with [github.com/hhd-dev/rechunk](https://github.com/hhd-dev/rechunk) for more efficient diffs and updates. (lower image size, better download speed, better update resuming)
 
       Will make your builds considerably slower. This is an experimental option, as it can cause issues with file permissions in some scenarios, so enable on your own risk.
 
-      Internally builds squashed images with podman to further reduce the image size.
+      *Warning*: This option will be deprecated in the future.
     required: false
     default: "false"
   use_cache:
@@ -116,7 +128,9 @@ runs:
     - name: Validate inputs
       shell: bash
       env:
-        SQUASH_INPUT_VALUE: ${{ inputs.squash }}
+        INPUT_BUILD_CHUNKED_OCI: ${{ inputs.build_chunked_oci }}
+        INPUT_RECHUNK: ${{ inputs.build_chunked_oci }}
+        INPUT_SQUASH: ${{ inputs.squash }}
         BUILD_OPTS: ${{ inputs.build_opts }}
         github_action_path: ${{ github.action_path }}
       run: |
@@ -130,7 +144,7 @@ runs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@18ce135bb5112fa8ce4ed6c17ab05699d7f3a5e0 # v3.11.0
-      if: ${{ inputs.squash != 'true' && inputs.rechunk != 'true' }}
+      if: ${{ inputs.squash != 'true' && inputs.build_chunked_oci != 'true' && inputs.rechunk != 'true' }}
       with:
         install: true
         driver: docker-container
@@ -146,7 +160,7 @@ runs:
 
     # that is compatible with BlueBuild
     - name: Setup Podman
-      if: ${{ (inputs.squash == 'true' || inputs.rechunk == 'true') && steps.ubuntu_version.outputs.version == '22.04' }}
+      if: ${{ (inputs.squash == 'true' || inputs.build_chunked_oci == 'true' || inputs.rechunk == 'true') && steps.ubuntu_version.outputs.version == '22.04' }}
       shell: bash
       run: |
         # from https://askubuntu.com/questions/1414446/whats-the-recommended-way-of-installing-podman-4-in-ubuntu-22-04
@@ -288,6 +302,8 @@ runs:
         BB_CACHE_LAYERS: ${{ inputs.use_cache }}
         BB_RETRY_PUSH_COUNT: ${{ inputs.retry_push_count }}
         BB_SQUASH: ${{ inputs.squash }}
+        BB_BUILD_CHUNKED_OCI: ${{ inputs.build_chunked_oci }}
+        BB_BUILD_CHUNKED_OCI_MAX_LAYERS: ${{ inputs.max_layers }}
         BB_RECHUNK: ${{ inputs.rechunk }}
         RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
         RUST_LOG_STYLE: always
@@ -297,6 +313,10 @@ runs:
         read -r -a BUILD_OPTS <<< "${BUILD_OPTS}"
         if [ "${BB_SQUASH}" = "true" ]; then
           BUILD_OPTS+=("--build-driver" "podman" "--squash")
+        fi
+
+        if [ "${BB_BUILD_CHUNKED_OCI}" = "false" ]; then
+          unset BB_BUILD_CHUNKED_OCI_MAX_LAYERS
         fi
 
         RUN_SUDO=""
