@@ -231,7 +231,7 @@ runs:
 
         # enable sigstore attachments for BlueBuild container verification
         sudo mkdir -p /etc/containers/registries.d
-        sudo cat <<'EOF' > /etc/containers/registries.d/blue-build.yaml
+        cat <<'EOF' | sudo tee /etc/containers/registries.d/blue-build.yaml > /dev/null
         docker:
           ghcr.io/blue-build:
             use-sigstore-attachments: true
