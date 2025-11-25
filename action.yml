@@ -163,6 +163,7 @@ runs:
       if: ${{ (inputs.squash == 'true' || inputs.build_chunked_oci == 'true' || inputs.rechunk == 'true') && steps.ubuntu_version.outputs.version == '22.04' }}
       shell: bash
       run: |
+        set -euo pipefail
         # from https://askubuntu.com/questions/1414446/whats-the-recommended-way-of-installing-podman-4-in-ubuntu-22-04
         ubuntu_version='22.04'
         key_url="https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/unstable/xUbuntu_${ubuntu_version}/Release.key"
@@ -191,6 +192,7 @@ runs:
       if: ${{ inputs.verify_install == 'true' }}
       shell: bash
       run: |
+        set -euo pipefail
         POLICY_FILE="/etc/containers/policy.json"
         CLI_IMAGE_REGISTRY="ghcr.io/blue-build/cli"
         MODULES_IMAGE_REGISTRY="ghcr.io/blue-build/modules"
@@ -242,6 +244,7 @@ runs:
         USE_UNSTABLE_CLI: ${{ inputs.use_unstable_cli }}
         CLI_VERSION: ${{ inputs.cli_version }}
       run: |
+        set -euo pipefail
         if [[ "${USE_UNSTABLE_CLI}" == "true" && -z "${CLI_VERSION}" ]]; then
           CLI_VERSION_TAG="main"
           REPO_TAG="main"
