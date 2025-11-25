@@ -230,6 +230,7 @@ runs:
         sudo mv POLICY.tmp "${POLICY_FILE}"
 
         # enable sigstore attachments for BlueBuild container verification
+        sudo mkdir -p /etc/containers/registries.d
         sudo cat <<'EOF' > /etc/containers/registries.d/blue-build.yaml
         docker:
           ghcr.io/blue-build:
