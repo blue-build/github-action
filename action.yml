@@ -129,7 +129,7 @@ runs:
       shell: bash
       env:
         INPUT_BUILD_CHUNKED_OCI: ${{ inputs.build_chunked_oci }}
-        INPUT_RECHUNK: ${{ inputs.build_chunked_oci }}
+        INPUT_RECHUNK: ${{ inputs.rechunk }}
         INPUT_SQUASH: ${{ inputs.squash }}
         BUILD_OPTS: ${{ inputs.build_opts }}
         github_action_path: ${{ github.action_path }}
