@@ -168,7 +168,7 @@ runs:
         key_url="https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/unstable/xUbuntu_${ubuntu_version}/Release.key"
         sources_url="https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/unstable/xUbuntu_${ubuntu_version}"
         echo "deb ${sources_url}/ /" | sudo tee /etc/apt/sources.list.d/devel-kubic-libcontainers-unstable.list
-        curl -fsSL "${key_url}" | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/devel_kubic_libcontainers_unstable.gpg > /dev/null
+        curl -fLsS --retry 5 "${key_url}" | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/devel_kubic_libcontainers_unstable.gpg > /dev/null
         sudo apt-get update
         sudo apt-get install -y podman
 
@@ -197,38 +197,42 @@ runs:
         CLI_IMAGE_PUBKEY="/etc/pki/containers/blue-build-cli.pub"
         MODULES_IMAGE_PUBKEY="/etc/pki/containers/blue-build-modules.pub"
         sudo mkdir -p /etc/pki/containers
-        sudo curl -Lo "${CLI_IMAGE_PUBKEY}" https://raw.githubusercontent.com/blue-build/cli/refs/heads/main/cosign.pub
-        sudo curl -Lo "${MODULES_IMAGE_PUBKEY}" https://raw.githubusercontent.com/blue-build/modules/refs/heads/main/cosign.pub
+        curl -fLsS --retry 5 https://raw.githubusercontent.com/blue-build/cli/refs/heads/main/cosign.pub | sudo tee "${CLI_IMAGE_PUBKEY}" > /dev/null
+        curl -fLsS --retry 5 https://raw.githubusercontent.com/blue-build/modules/refs/heads/main/cosign.pub | sudo tee "${MODULES_IMAGE_PUBKEY}" > /dev/null
 
-        # add cli pubkey
-        jq --arg image_registry "${CLI_IMAGE_REGISTRY}" \
-           --arg image_pubkey "${CLI_IMAGE_PUBKEY}" \
-           '.transports.docker |= 
-            { $image_registry: [
-                {
-                    "type": "sigstoreSigned",
-                    "keyPath": $image_pubkey,
-                    "signedIdentity": {
-                        "type": "matchRepository"
-                    }
+        # add public keys for BlueBuild CLI and modules to container policy
+        jq --arg cli_image_registry "${CLI_IMAGE_REGISTRY}" \
+          --arg cli_image_pubkey "${CLI_IMAGE_PUBKEY}" \
+          --arg modules_image_registry "${MODULES_IMAGE_REGISTRY}" \
+          --arg modules_image_pubkey "${MODULES_IMAGE_PUBKEY}" \
+          '.transports.docker += {
+            $cli_image_registry: [
+              {
+                "type": "sigstoreSigned",
+                "keyPath": $cli_image_pubkey,
+                "signedIdentity": {
+                  "type": "matchRepository"
                 }
-            ] } + .' "${POLICY_FILE}" > POLICY.tmp
-        sudo mv POLICY.tmp "${POLICY_FILE}"
-        
-        # add modules pubkey
-        jq --arg image_registry "${MODULES_IMAGE_REGISTRY}" \
-           --arg image_pubkey "${MODULES_IMAGE_PUBKEY}" \
-           '.transports.docker |= 
-            { $image_registry: [
-                {
-                    "type": "sigstoreSigned",
-                    "keyPath": $image_pubkey,
-                    "signedIdentity": {
-                        "type": "matchRepository"
-                    }
+              }
+            ],
+            $modules_image_registry: [
+              {
+                "type": "sigstoreSigned",
+                "keyPath": $modules_image_pubkey,
+                "signedIdentity": {
+                  "type": "matchRepository"
                 }
-            ] } + .' "${POLICY_FILE}" > POLICY.tmp
+              }
+            ]
+          }' "${POLICY_FILE}" > POLICY.tmp
         sudo mv POLICY.tmp "${POLICY_FILE}"
+
+        # enable sigstore attachments for BlueBuild container verification
+        sudo cat <<'EOF' > /etc/containers/registries.d/blue-build.yaml
+        docker:
+          ghcr.io/blue-build:
+            use-sigstore-attachments: true
+        EOF
 
     - name: Determine Vars
       id: build_vars
@@ -247,7 +251,7 @@ runs:
           REPO_TAG="${CLI_VERSION}"
           VERIFY_FLAG="--source-tag"
         else
-          REPO_TAG=$(curl -s https://api.github.com/repos/blue-build/cli/tags | jq -r '.[0].name')
+          REPO_TAG=$(curl -fLsS --retry 5 https://api.github.com/repos/blue-build/cli/tags | jq -r '.[0].name')
           CLI_VERSION_TAG="v0.9"
           VERIFY_FLAG="--source-tag"
         fi
