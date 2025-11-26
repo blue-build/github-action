@@ -2,8 +2,10 @@
 set -euo pipefail
 
 # Expected env vars:
-# SQUASH_INPUT_VALUE
 # BUILD_OPTS
+# INPUT_BUILD_CHUNKED_OCI
+# INPUT_RECHUNK
+# INPUT_SQUASH
 
 # check_build_opts "option1" "option2" "error_message"
 # If you have only 1 option to provide, provide '---' string as 2nd placeholder option
@@ -26,7 +28,19 @@ check_build_opts() {
     fi
 }
 
-if [[ "${SQUASH_INPUT_VALUE}" != "true" ]]; then
+if [[ "${INPUT_BUILD_CHUNKED_OCI}" == 'true' ]]; then
+  if [[ "${INPUT_RECHUNK}" == 'true' ]]; then
+    echo "Cannot set both 'build_chunked_oci' and 'rechunk' to true."
+    exit 1
+  fi
+  check_build_opts "--build-chunked-oci" "---" "Cannot provide '--build-chunked-oci' in build_opts while 'build_chunked_oci' is set to true."
+fi
+
+if [[ "${INPUT_RECHUNK}" == 'true' ]]; then
+  check_build_opts "--rechunk" "---" "Cannot provide '--rechunk' in build_opts while 'rechunk' is set to true."
+fi
+
+if [[ "${INPUT_SQUASH}" == "true" ]]; then
   check_build_opts "-B" "--build-driver" "Cannot provide '--build-driver' in build_opts while 'squash' is set to true."
   check_build_opts "-s" "--squash" "Cannot provide '--squash' in build_opts while 'squash' is set to true."
 fi

@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.9.1](https://github.com/blue-build/github-action/compare/v1.9.0...v1.9.1) (2025-09-04)
+
+
+### Bug Fixes
+
+* Use an array for the args ([#97](https://github.com/blue-build/github-action/issues/97)) ([13d8262](https://github.com/blue-build/github-action/commit/13d82627c8c845889a90b32360a9193802d23eaf))
+
+## [1.9.0](https://github.com/blue-build/github-action/compare/v1.8.3...v1.9.0) (2025-09-02)
+
+
+### Features
+
+* add retry_push_count option to expose retry-push CLI options ([#91](https://github.com/blue-build/github-action/issues/91)) ([2c22aca](https://github.com/blue-build/github-action/commit/2c22acac43b3d90f1a02cf7ebf9bbc39cd845b4d))
+
 ## [1.8.2](https://github.com/blue-build/github-action/compare/v1.8.1...v1.8.2) (2025-06-22)
 
 
