@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.10.0](https://github.com/blue-build/github-action/compare/v1.9.1...v1.10.0) (2025-11-26)
+
+
+### Features
+
+* add options for build-chunked-oci ([#106](https://github.com/blue-build/github-action/issues/106)) ([07ff155](https://github.com/blue-build/github-action/commit/07ff1552f835c213bcb3d580a7178182874dcdde))
+* add provenance verification ([#107](https://github.com/blue-build/github-action/issues/107)) ([5ff2e30](https://github.com/blue-build/github-action/commit/5ff2e30c5a437f552d999f735013c70f01204e9f))
+* set container policy to validate Blue-Build cli signature ([#105](https://github.com/blue-build/github-action/issues/105)) ([c1c1e56](https://github.com/blue-build/github-action/commit/c1c1e56702055fb24f60660162e670203f977195))
+
+
+### Bug Fixes
+
+* enable sigstore attachments for container verification ([#111](https://github.com/blue-build/github-action/issues/111)) ([d150c94](https://github.com/blue-build/github-action/commit/d150c94be4ab0f45cbfddcf7cd3206df88323781))
+* missing mkdir ([#113](https://github.com/blue-build/github-action/issues/113)) ([8484206](https://github.com/blue-build/github-action/commit/84842061ad1b98ed7419ab6601e516ec11be77ea))
+* missing pubkey dir ([#109](https://github.com/blue-build/github-action/issues/109)) ([9c9c416](https://github.com/blue-build/github-action/commit/9c9c416c3ba9b043b01821496592224177ba3c49))
+* set pipefail ([#112](https://github.com/blue-build/github-action/issues/112)) ([90c0826](https://github.com/blue-build/github-action/commit/90c0826fbf6b7ddeceea05748b2f7c851b8e64f3))
+* shell scripting error ([#114](https://github.com/blue-build/github-action/issues/114)) ([82144b7](https://github.com/blue-build/github-action/commit/82144b7f48d7170874cc2b70abecd349f6938f21))
+* typo in input validation step ([#115](https://github.com/blue-build/github-action/issues/115)) ([0235ef4](https://github.com/blue-build/github-action/commit/0235ef441cf360ca62916f796111c52f8947b32b))
+
 ## [1.9.1](https://github.com/blue-build/github-action/compare/v1.9.0...v1.9.1) (2025-09-04)
 
 
