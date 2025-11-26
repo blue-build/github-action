@@ -173,7 +173,7 @@ runs:
         sudo apt-get update
         sudo apt-get install -y podman
 
-    - uses: sigstore/cosign-installer@398d4b0eeef1380460a10c8013a76f728fb906ac # v3.9.1
+    - uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
       with:
         install-dir: /usr/bin
         use-sudo: true
