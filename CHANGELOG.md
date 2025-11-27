@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.11.0](https://github.com/blue-build/github-action/compare/v1.10.0...v1.11.0) (2025-11-27)
+## [1.10.1](https://github.com/blue-build/github-action/compare/v1.10.0...v1.10.1) (2025-11-27)
 
 
 ### Features
