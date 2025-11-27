@@ -12,6 +12,11 @@ inputs:
 
       Example: `&#36;{{ secrets.SIGNING_SECRET }}`
     required: true
+  push:
+    description: |
+      Whether to push the image to a container registry.
+    required: false
+    default: "true"
   registry_token:
     description: |
       The token used to sign into the container registry.
@@ -302,6 +307,7 @@ runs:
       env:
         COSIGN_PRIVATE_KEY: ${{ inputs.cosign_private_key }}
         GH_TOKEN: ${{ inputs.registry_token }}
+        BB_BUILD_PUSH: ${{ inputs.push }}
         BB_PASSWORD: ${{ inputs.registry_token }}
         BB_USERNAME: ${{ inputs.registry_username }}
         BB_REGISTRY: ${{ inputs.registry }}
@@ -338,7 +344,7 @@ runs:
         fi
 
         if [ -n "$RUN_SUDO" ]; then
-          sudo -E bluebuild build -v --push "${BUILD_OPTS[@]}" "${RECIPE_PATH}"
+          sudo -E bluebuild build -v "${BUILD_OPTS[@]}" "${RECIPE_PATH}"
         else
-          bluebuild build -v --push "${BUILD_OPTS[@]}" "${RECIPE_PATH}"
+          bluebuild build -v "${BUILD_OPTS[@]}" "${RECIPE_PATH}"
         fi
