@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.0](https://github.com/blue-build/github-action/compare/v1.10.0...v1.11.0) (2025-11-27)
+
+
+### Features
+
+* add "push" option to allow opting out of pushing ([#118](https://github.com/blue-build/github-action/issues/118)) ([3cbd26a](https://github.com/blue-build/github-action/commit/3cbd26afa68ca45d431ecefa1967de4cb724c243))
+
 ## [1.10.0](https://github.com/blue-build/github-action/compare/v1.9.1...v1.10.0) (2025-11-26)
 
 
