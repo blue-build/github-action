@@ -144,7 +144,7 @@ runs:
     # building custom images might take a lot of space,
     # so it's best to remove unneeded softawre
     - name: Maximize build space
-      uses: hastd/free-disk-space@5c7d2a3a2111207998da95cb27f78ef9d5982abd # v0.1.0
+      uses: hastd/free-disk-space@78ec0490f953d89f024c95d0c293e6307ceac02e # v0.1.1
       if: ${{ inputs.maximize_build_space == 'true' }}
 
     - name: Set up Docker Buildx
