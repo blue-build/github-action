@@ -183,6 +183,9 @@ runs:
         install-dir: /usr/bin
         use-sudo: true
 
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
+
     - name: Install the slsa-verifier
       if: ${{ inputs.verify_install == 'true' }}
       uses: slsa-framework/slsa-verifier/actions/installer@ea584f4502babc6f60d9bc799dbbb13c1caa9ee6 # v2.7.1
