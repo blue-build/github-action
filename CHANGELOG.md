@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.10.2](https://github.com/blue-build/github-action/compare/v1.10.1...v1.10.2) (2025-12-04)
+
+
+### Features
+
+* Add qemu setup ([#121](https://github.com/blue-build/github-action/issues/121)) ([2fcf3cd](https://github.com/blue-build/github-action/commit/2fcf3cd5a7844c68ddfa5394ae5b3b12b9593c3f))
+
+
+### Miscellaneous Chores
+
+* release 1.10.2 ([37b2706](https://github.com/blue-build/github-action/commit/37b2706a0be62812f2bdc1ba3085f5767adb2cee))
+
 ## [1.10.1](https://github.com/blue-build/github-action/compare/v1.10.0...v1.10.1) (2025-11-27)
 
 
