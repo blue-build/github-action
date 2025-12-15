@@ -184,15 +184,22 @@ runs:
         GH_TOKEN: ${{ github.token }}
       run: |
         set -euo pipefail
+        case $(uname -m) in
+          x86_64) arch='x86_64' ;;
+          aarch64) arch='aarch64' ;;
+          *) echo 'Unsupported architecture; not replacing skopeo.'; exit 0 ;;
+        esac
+        echo 'Replacing skopeo with up-to-date version...'
         skopeo_url=$(curl -fLsS --retry 5 \
           -H 'Accept: application/vnd.github+json' \
           -H "Authorization: Bearer ${GH_TOKEN}"  \
           'https://api.github.com/repos/fiftydinar/pseudo-static-bins-bluebuild/releases/latest' \
-          | jq -cr '.assets | map(select(.name | test("^skopeo-.*-x86_64$")).browser_download_url) | first')
+          | jq -cr --arg arch "${arch}" '.assets | map(select(.name | test("^skopeo-.*-" + $arch + "$")).browser_download_url) | first')
         temp_dir=$(mktemp -d)
         curl -fLsS --retry 5 -o "${temp_dir}/skopeo" "${skopeo_url}"
         sudo apt remove skopeo
         sudo install -m 755 "${temp_dir}/skopeo" /usr/bin/skopeo
+        /usr/bin/skopeo --version
 
     - uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
       with:
