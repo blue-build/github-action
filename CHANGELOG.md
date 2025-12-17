@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.3](https://github.com/blue-build/github-action/compare/v1.10.2...v1.10.3) (2025-12-17)
+
+
+### Bug Fixes
+
+* use github runner token when calling the api, to prevent rate li… ([#124](https://github.com/blue-build/github-action/issues/124)) ([c2fc4f6](https://github.com/blue-build/github-action/commit/c2fc4f6aff65009c59661c48bdacfc9410376e54))
+
 ## [1.10.2](https://github.com/blue-build/github-action/compare/v1.10.1...v1.10.2) (2025-12-04)
 
 
