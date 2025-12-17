@@ -252,6 +252,7 @@ runs:
         RECIPE: ${{ inputs.recipe }}
         USE_UNSTABLE_CLI: ${{ inputs.use_unstable_cli }}
         CLI_VERSION: ${{ inputs.cli_version }}
+        AUTH_HEADER: "Authorization: Bearer ${{ github.token }}"
       run: |
         set -euo pipefail
         if [[ "${USE_UNSTABLE_CLI}" == "true" && -z "${CLI_VERSION}" ]]; then
@@ -263,7 +264,7 @@ runs:
           REPO_TAG="${CLI_VERSION}"
           VERIFY_FLAG="--source-tag"
         else
-          REPO_TAG=$(curl -fLsS --retry 5 https://api.github.com/repos/blue-build/cli/tags | jq -r '.[0].name')
+          REPO_TAG=$(curl -fLsS --variable '%AUTH_HEADER' --expand-header '{{AUTH_HEADER}}' --retry 5 https://api.github.com/repos/blue-build/cli/tags | jq -r '.[0].name')
           CLI_VERSION_TAG="v0.9"
           VERIFY_FLAG="--source-tag"
         fi
