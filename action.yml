@@ -85,6 +85,11 @@ inputs:
       *Warning*: This option will be deprecated in the future.
     required: false
     default: "false"
+  rechunk_clear_plan:
+    description: |
+      Disregard previous build's layer plan when rechunking.
+    required: false
+    default: "false"
   use_cache:
     description: |
       Make use of layer cache by pushing the layers to the registry. Input must match the string 'true' for the step to be enabled.
@@ -323,6 +328,7 @@ runs:
         BB_BUILD_CHUNKED_OCI: ${{ inputs.build_chunked_oci }}
         BB_BUILD_CHUNKED_OCI_MAX_LAYERS: ${{ inputs.max_layers }}
         BB_RECHUNK: ${{ inputs.rechunk }}
+        BB_BUILD_RECHUNK_CLEAR_PLAN: ${{ inputs.rechunk_clear_plan }}
         RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
         RUST_LOG_STYLE: always
         CLICOLOR_FORCE: "1"
