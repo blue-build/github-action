@@ -28,16 +28,29 @@ check_build_opts() {
     fi
 }
 
+sets_clear_plan() {
+  [[ "${INPUT_RECHUNK_CLEAR_PLAN}" == 'true' ]]
+}
+
+clear_plan_build_opts_check() {
+  if sets_clear_plan; then
+    check_build_opts "--rechunk-clear-plan" "---" "Cannot provide '--rechunk-clear-plan' in build_opts while 'rechunk_clear_plan' is set to true."
+  fi
+}
+
 if [[ "${INPUT_BUILD_CHUNKED_OCI}" == 'true' ]]; then
   if [[ "${INPUT_RECHUNK}" == 'true' ]]; then
     echo "Cannot set both 'build_chunked_oci' and 'rechunk' to true."
     exit 1
   fi
+  clear_plan_build_opts_check
   check_build_opts "--build-chunked-oci" "---" "Cannot provide '--build-chunked-oci' in build_opts while 'build_chunked_oci' is set to true."
-fi
-
-if [[ "${INPUT_RECHUNK}" == 'true' ]]; then
+elif [[ "${INPUT_RECHUNK}" == 'true' ]]; then
+  clear_plan_build_opts_check
   check_build_opts "--rechunk" "---" "Cannot provide '--rechunk' in build_opts while 'rechunk' is set to true."
+elif sets_clear_plan; then
+  echo "Cannot set 'rechunk_clear_plan' when 'build_chunked_oci' or 'rechunk' is false."
+  exit 1
 fi
 
 if [[ "${INPUT_SQUASH}" == "true" ]]; then
