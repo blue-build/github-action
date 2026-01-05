@@ -49,7 +49,7 @@ elif [[ "${INPUT_RECHUNK}" == 'true' ]]; then
   clear_plan_build_opts_check
   check_build_opts "--rechunk" "---" "Cannot provide '--rechunk' in build_opts while 'rechunk' is set to true."
 elif sets_clear_plan; then
-  echo "Cannot set 'rechunk_clear_plan' when 'build_chunked_oci' or 'rechunk' is false."
+  echo "Cannot set 'rechunk_clear_plan' when 'build_chunked_oci' and 'rechunk' are both false."
   exit 1
 fi
 
