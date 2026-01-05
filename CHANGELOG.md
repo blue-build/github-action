@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.0](https://github.com/blue-build/github-action/compare/v1.10.3...v1.11.0) (2026-01-05)
+
+
+### Features
+
+* add option for --rechunk-clear-plan ([#128](https://github.com/blue-build/github-action/issues/128)) ([17bffb4](https://github.com/blue-build/github-action/commit/17bffb4fe1f62964cfd2ce138b509fc84a46e059))
+
 ## [1.10.3](https://github.com/blue-build/github-action/compare/v1.10.2...v1.10.3) (2025-12-17)
 
 
