@@ -327,6 +327,7 @@ runs:
         BB_SQUASH: ${{ inputs.squash }}
         BB_BUILD_CHUNKED_OCI: ${{ inputs.build_chunked_oci }}
         BB_BUILD_CHUNKED_OCI_MAX_LAYERS: ${{ inputs.max_layers }}
+        BB_BUILD_REMOVE_BASE_IMAGE: "true"
         BB_RECHUNK: ${{ inputs.rechunk }}
         BB_BUILD_RECHUNK_CLEAR_PLAN: ${{ inputs.rechunk_clear_plan }}
         RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
@@ -341,6 +342,7 @@ runs:
 
         if [ "${BB_BUILD_CHUNKED_OCI}" = "false" ]; then
           unset BB_BUILD_CHUNKED_OCI_MAX_LAYERS
+          unset BB_BUILD_REMOVE_BASE_IMAGE
         fi
 
         RUN_SUDO=""
