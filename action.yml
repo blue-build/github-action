@@ -140,6 +140,7 @@ runs:
       env:
         INPUT_BUILD_CHUNKED_OCI: ${{ inputs.build_chunked_oci }}
         INPUT_RECHUNK: ${{ inputs.rechunk }}
+        INPUT_RECHUNK_CLEAR_PLAN: ${{ inputs.rechunk_clear_plan }}
         INPUT_SQUASH: ${{ inputs.squash }}
         BUILD_OPTS: ${{ inputs.build_opts }}
         github_action_path: ${{ github.action_path }}
