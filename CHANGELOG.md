@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.11.0](https://github.com/blue-build/github-action/compare/v1.10.3...v1.11.0) (2026-01-20)
+
+
+### Features
+
+* add option for --rechunk-clear-plan ([#128](https://github.com/blue-build/github-action/issues/128)) ([17bffb4](https://github.com/blue-build/github-action/commit/17bffb4fe1f62964cfd2ce138b509fc84a46e059))
+* remove base image after building image ([#131](https://github.com/blue-build/github-action/issues/131)) ([73365bf](https://github.com/blue-build/github-action/commit/73365bff661db00b0d187bf593442e33cae786ad))
+
+
+### Bug Fixes
+
+* Add checks for rechunk_clear_plan ([#130](https://github.com/blue-build/github-action/issues/130)) ([fd09470](https://github.com/blue-build/github-action/commit/fd094700d13084853ff2a23d3da44e4bc573034f))
+
 ## [1.10.3](https://github.com/blue-build/github-action/compare/v1.10.2...v1.10.3) (2025-12-17)
 
 
