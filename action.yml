@@ -267,7 +267,11 @@ runs:
         elif [ -n "${CLI_VERSION}" ]; then
           CLI_VERSION_TAG="${CLI_VERSION}"
           REPO_TAG="${CLI_VERSION}"
-          VERIFY_FLAG="--source-tag"
+          if [[ "${CLI_VERSION}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            VERIFY_FLAG="--source-tag"
+          else
+            VERIFY_FLAG="--source-branch"
+          fi
         else
           REPO_TAG=$(curl -fLsS --variable '%AUTH_HEADER' --expand-header '{{AUTH_HEADER}}' --retry 5 https://api.github.com/repos/blue-build/cli/tags | jq -r '.[0].name')
           CLI_VERSION_TAG="v0.9"
