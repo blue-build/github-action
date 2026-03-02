@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.11.1](https://github.com/blue-build/github-action/compare/v1.11.0...v1.11.1) (2026-03-02)
+
+
+### Bug Fixes
+
+* Detect if custom CLI_VERSION is a tag or branch ([#135](https://github.com/blue-build/github-action/issues/135)) ([9398c83](https://github.com/blue-build/github-action/commit/9398c83a8f4e823a69c58f08238c9a527855e8ea))
+
+
+### Performance Improvements
+
+* skip freeing disk space if 80+ GB available ([#136](https://github.com/blue-build/github-action/issues/136)) ([719dec4](https://github.com/blue-build/github-action/commit/719dec4aafd6ef1b3e18f291f81808c3ef71bee8))
+
 ## [1.11.0](https://github.com/blue-build/github-action/compare/v1.10.3...v1.11.0) (2026-01-20)
 
 
