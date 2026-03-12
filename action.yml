@@ -131,6 +131,13 @@ inputs:
       Set to true verify the cosign signature for the Blue-Build cli
     required: false
     default: "false"
+  skip_if_base_unchanged:
+    description: |
+      When set to 'true', the build will be skipped if the base image digest has not changed since the last run.
+      The base image digest is cached using a key derived from the OS, recipe file hash, and base image reference.
+      Requires 'yq' and 'skopeo' to be available on the runner.
+    required: false
+    default: "false"
 
 runs:
   using: "composite"
@@ -292,6 +299,34 @@ runs:
         fi
         echo "recipe_path=${RECIPE_PATH}" >> "${GITHUB_OUTPUT}"
 
+    - name: Restore base image digest cache
+      if: ${{ inputs.skip_if_base_unchanged == 'true' }}
+      uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+      with:
+        path: .base-image-digest
+        key: ${{ runner.os }}-base-digest-${{ hashFiles(steps.build_vars.outputs.recipe_path) }}-${{ steps.build_vars.outputs.recipe_path }}
+        restore-keys: |
+          ${{ runner.os }}-base-digest-${{ hashFiles(steps.build_vars.outputs.recipe_path) }}-
+          ${{ runner.os }}-base-digest-
+
+    - name: Check base image digest
+      id: check_base_digest
+      if: ${{ inputs.skip_if_base_unchanged == 'true' }}
+      shell: bash
+      env:
+        RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
+        github_action_path: ${{ github.action_path }}
+      run: |
+        set +e
+        bash "${github_action_path}/check_base_image.sh" "${RECIPE_PATH}"
+        EXIT_CODE=$?
+        set -e
+        if [ "${EXIT_CODE}" -eq 0 ]; then
+          echo "should_skip_build=true" >> "${GITHUB_OUTPUT}"
+        else
+          echo "should_skip_build=false" >> "${GITHUB_OUTPUT}"
+        fi
+
     - name: Install BlueBuild
       shell: bash
       env:
@@ -318,6 +353,7 @@ runs:
 
     # blue-build/cli does the heavy lifting
     - name: Build Image
+      if: ${{ steps.check_base_digest.outputs.should_skip_build != 'true' }}
       shell: bash
       working-directory: ${{ inputs.working_directory }}
       env:
