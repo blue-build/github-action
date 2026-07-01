@@ -64,6 +64,13 @@ inputs:
       Example: `ublue-os`
     required: false
     default: ${{ github.repository_owner }}
+  chunkah:
+    description: |
+      Uses Chunkah to rechunk the image, allowing for smaller images and smaller updates.
+
+      This will increase the build-time and take up more space during build-time.
+    required: false
+    default: "false"
   build_chunked_oci:
     description: |
       Uses `rpm-ostree compose build-chunked-oci` to rechunk the image, allowing for smaller images and smaller updates.
@@ -138,6 +145,7 @@ runs:
     - name: Validate inputs
       shell: bash
       env:
+        INPUT_CHUNKAH: ${{ inputs.chunkah }}
         INPUT_BUILD_CHUNKED_OCI: ${{ inputs.build_chunked_oci }}
         INPUT_RECHUNK: ${{ inputs.rechunk }}
         INPUT_RECHUNK_CLEAR_PLAN: ${{ inputs.rechunk_clear_plan }}
@@ -332,10 +340,11 @@ runs:
         BB_CACHE_LAYERS: ${{ inputs.use_cache }}
         BB_RETRY_PUSH_COUNT: ${{ inputs.retry_push_count }}
         BB_SQUASH: ${{ inputs.squash }}
+        BB_BUILD_CHUNKAH: ${{ inputs.chunkah }}
         BB_BUILD_CHUNKED_OCI: ${{ inputs.build_chunked_oci }}
-        BB_BUILD_CHUNKED_OCI_MAX_LAYERS: ${{ inputs.max_layers }}
+        BB_BUILD_MAX_LAYERS: ${{ inputs.max_layers }}
         BB_BUILD_REMOVE_BASE_IMAGE: "true"
-        BB_RECHUNK: ${{ inputs.rechunk }}
+        BB_BUILD_RECHUNK: ${{ inputs.rechunk }}
         BB_BUILD_RECHUNK_CLEAR_PLAN: ${{ inputs.rechunk_clear_plan }}
         RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
         RUST_LOG_STYLE: always
@@ -343,26 +352,54 @@ runs:
         BUILD_OPTS: ${{ inputs.build_opts }}
       run: |
         read -r -a BUILD_OPTS <<< "${BUILD_OPTS}"
-        if [ "${BB_SQUASH}" = "true" ]; then
+
+        boolean_variables=(
+          BB_BUILD_PUSH
+          BB_SQUASH
+          BB_BUILD_CHUNKAH
+          BB_BUILD_CHUNKED_OCI
+          BB_BUILD_REMOVE_BASE_IMAGE
+          BB_BUILD_RECHUNK
+          BB_BUILD_RECHUNK_CLEAR_PLAN
+          BB_CACHE_LAYERS
+        )
+        # Normalize boolean values to unset or 'true'. Unsetting falsey values
+        # is necessary due to this issue with clap's parsing:
+        # https://github.com/clap-rs/clap/issues/5591
+        for bool_var in "${boolean_variables[@]}"; do
+          case "${!bool_var,,}" in
+            ''|0|false|no|off)
+              unset "${bool_var}"
+              ;;
+            1|true|yes|on)
+              IFS= read -r "${bool_var}" <<< 'true'
+              ;;
+            *)
+              echo "Invalid value '${!bool_var}' for variable '${bool_var}'"
+              exit 1
+              ;;
+          esac
+        done
+
+        if [[ "${BB_SQUASH-}" == 'true' ]]; then
           BUILD_OPTS+=("--build-driver" "podman" "--squash")
         fi
 
-        if [ "${BB_BUILD_CHUNKED_OCI}" = "false" ]; then
-          unset BB_BUILD_CHUNKED_OCI_MAX_LAYERS
+        if [[ -z "${BB_BUILD_CHUNKAH-}" && -z "${BB_BUILD_CHUNKED_OCI-}" ]]; then
+          unset BB_BUILD_MAX_LAYERS
           unset BB_BUILD_REMOVE_BASE_IMAGE
         fi
 
         RUN_SUDO=""
-        if [ "${BB_RECHUNK}" = "true" ]; then
+        if [[ "${BB_BUILD_RECHUNK-}" = 'true' ]]; then
           RUN_SUDO=1
-          BUILD_OPTS+=("--rechunk")
         fi
 
-        if [ "${BB_RETRY_PUSH_COUNT}" != '0' ]; then
+        if [[ "${BB_RETRY_PUSH_COUNT}" != '0' ]]; then
           BUILD_OPTS+=("--retry-push" "--retry-count" "${BB_RETRY_PUSH_COUNT}")
         fi
 
-        if [ -n "$RUN_SUDO" ]; then
+        if [[ -n "${RUN_SUDO}" ]]; then
           sudo -E bluebuild build -v "${BUILD_OPTS[@]}" "${RECIPE_PATH}"
         else
           bluebuild build -v "${BUILD_OPTS[@]}" "${RECIPE_PATH}"

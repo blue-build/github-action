@@ -38,7 +38,14 @@ clear_plan_build_opts_check() {
   fi
 }
 
-if [[ "${INPUT_BUILD_CHUNKED_OCI}" == 'true' ]]; then
+if [[ "${INPUT_CHUNKAH}" == 'true' ]]; then
+  if [[ "${INPUT_BUILD_CHUNKED_OCI}" == 'true' || "${INPUT_RECHUNK}" == 'true' ]]; then
+    echo "Cannot set more than one of 'chunkah', 'build_chunked_oci', and 'rechunk' to true."
+    exit 1
+  fi
+  clear_plan_build_opts_check
+  check_build_opts "--chunkah" "---" "Cannot provide '--chunkah' in build_opts while 'chunkah' is set to true."
+elif [[ "${INPUT_BUILD_CHUNKED_OCI}" == 'true' ]]; then
   if [[ "${INPUT_RECHUNK}" == 'true' ]]; then
     echo "Cannot set both 'build_chunked_oci' and 'rechunk' to true."
     exit 1
