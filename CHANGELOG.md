@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.0](https://github.com/blue-build/github-action/compare/v1.11.1...v1.12.0) (2026-07-06)
+
+
+### Features
+
+* add support for Chunkah ([#152](https://github.com/blue-build/github-action/issues/152)) ([220bcb7](https://github.com/blue-build/github-action/commit/220bcb78283ed09e6aef1a95b840dd188d2fd591))
+
 ## [1.11.1](https://github.com/blue-build/github-action/compare/v1.11.0...v1.11.1) (2026-03-02)
 
 
