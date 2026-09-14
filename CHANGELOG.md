@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.0](https://github.com/blue-build/github-action/compare/v1.12.0...v1.13.0) (2026-09-14)
+
+
+### Features
+
+* support providing the cosign public key via GitHub Secrets ([#156](https://github.com/blue-build/github-action/issues/156)) ([2f3ad44](https://github.com/blue-build/github-action/commit/2f3ad44fe1c1f09d5144f69dc118baee7ca6b008))
+
 ## [1.12.0](https://github.com/blue-build/github-action/compare/v1.11.1...v1.12.0) (2026-07-06)
 
 
