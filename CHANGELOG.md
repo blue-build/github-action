@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.0](https://github.com/blue-build/github-action/compare/v1.13.0...v1.14.0) (2026-11-02)
+
+
+### Features
+
+* add support for writing image digests to file ([#167](https://github.com/blue-build/github-action/issues/167)) ([f423577](https://github.com/blue-build/github-action/commit/f423577505bfa3563720c91309fe3c386935ea89))
+
 ## [1.13.0](https://github.com/blue-build/github-action/compare/v1.12.0...v1.13.0) (2026-09-14)
 
 
