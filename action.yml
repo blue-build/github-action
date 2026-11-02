@@ -147,6 +147,14 @@ inputs:
       Set to true verify the cosign signature for the Blue-Build cli
     required: false
     default: "false"
+  digestfile:
+    description: |
+      Filesystem path that digests of built images will be written to in JSON format.
+
+      Example file format:
+      `{"ghcr.io/blue-build/base-images/fedora-kinoite:latest": "sha256:abcdef..."}`
+    required: false
+    default: ""
 
 runs:
   using: "composite"
@@ -356,6 +364,7 @@ runs:
         BB_BUILD_REMOVE_BASE_IMAGE: "true"
         BB_BUILD_RECHUNK: ${{ inputs.rechunk }}
         BB_BUILD_RECHUNK_CLEAR_PLAN: ${{ inputs.rechunk_clear_plan }}
+        BB_BUILD_DIGESTFILE: ${{ inputs.digestfile }}
         RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
         RUST_LOG_STYLE: always
         CLICOLOR_FORCE: "1"
@@ -396,6 +405,10 @@ runs:
               ;;
           esac
         done
+
+        if [[ -z "${BB_BUILD_DIGESTFILE-}" ]]; then
+          unset BB_BUILD_DIGESTFILE
+        fi
 
         if [[ "${BB_SQUASH-}" == 'true' ]]; then
           BUILD_OPTS+=("--build-driver" "podman" "--squash")
