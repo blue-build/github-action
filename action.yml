@@ -429,7 +429,9 @@ runs:
         fi
 
         if [[ -n "${RUN_SUDO}" ]]; then
-          sudo -E bluebuild build -v "${BUILD_OPTS[@]}" "${RECIPE_PATH}"
+          # sudo-rs (Ubuntu 26.04) ignores -E, so keep the variables by name
+          keep_env=$(compgen -e | grep -E '^(BB_|COSIGN_|GH_|GITHUB_|ACTIONS_ID_TOKEN_REQUEST_|SIGSTORE_|RUST_LOG|CLICOLOR_FORCE$|DOCKER_HOST$|HOME$)' | paste -sd, -)
+          sudo --preserve-env="${keep_env}" bluebuild build -v "${BUILD_OPTS[@]}" "${RECIPE_PATH}"
         else
           bluebuild build -v "${BUILD_OPTS[@]}" "${RECIPE_PATH}"
         fi
