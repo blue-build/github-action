@@ -188,33 +188,62 @@ runs:
         driver: docker-container
         cache-binary: ${{ inputs.use_cache }}
 
-    - name: Get Ubuntu version
-      id: ubuntu_version
-      shell: bash
-      run: |
-        VERSION=$(awk -F= '/^VERSION_ID=/ {gsub(/"/, "", $2); print $2}' /etc/os-release)
-        echo "Ubuntu version is $VERSION"
-        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
-    # that is compatible with BlueBuild
-    - name: Setup Podman
-      if: ${{ (inputs.squash == 'true' || inputs.build_chunked_oci == 'true' || inputs.rechunk == 'true') && steps.ubuntu_version.outputs.version == '22.04' }}
-      shell: bash
-      run: |
-        set -euo pipefail
-        # from https://askubuntu.com/questions/1414446/whats-the-recommended-way-of-installing-podman-4-in-ubuntu-22-04
-        ubuntu_version='22.04'
-        key_url="https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/unstable/xUbuntu_${ubuntu_version}/Release.key"
-        sources_url="https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/unstable/xUbuntu_${ubuntu_version}"
-        echo "deb ${sources_url}/ /" | sudo tee /etc/apt/sources.list.d/devel-kubic-libcontainers-unstable.list
-        curl -fLsS --retry 5 "${key_url}" | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/devel_kubic_libcontainers_unstable.gpg > /dev/null
-        sudo apt-get update
-        sudo apt-get install -y podman
-
     - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
       with:
         install-dir: /usr/bin
         use-sudo: true
+
+    # The runner images do not ship a podman this action can use: 22.04 has
+    # none at all, and the others are behind. The distrobox AppImage builds
+    # podman from current sources and is multi-call: named podman, it runs its
+    # bundled podman together with conmon and crun, so every runner gets the
+    # same current podman.
+    #
+    # It goes into ~/bin with its portable folders, which keeps podman's state
+    # next to the AppImage. From 24.04 on the unprivileged_userns AppArmor
+    # profile only lets a binary with its own profile create a rootless user
+    # namespace, so the step loads one for that path.
+    #
+    # This has to stay after the cosign installer: that one puts /usr/bin on
+    # $GITHUB_PATH, and the runner prepends the last entry written, so a step
+    # before it would leave the runner's own podman first in PATH.
+    - name: Setup Podman
+      if: ${{ inputs.squash == 'true' || inputs.build_chunked_oci == 'true' || inputs.rechunk == 'true' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        set -euo pipefail
+        mkdir -p "$HOME/bin"
+        gh release download --repo pkgforge-dev/distrobox-AppImage \
+          --pattern "*anylinux-$(uname -m).AppImage" \
+          --output "$HOME/bin/podman"
+        chmod +x "$HOME/bin/podman"
+        # portable folders, so podman keeps its state next to the AppImage
+        # instead of in the runner's home, where an older podman may have left
+        # a BoltDB database that podman 6 refuses to start with
+        mkdir -p "$HOME/bin/podman.home" "$HOME/bin/podman.share" \
+          "$HOME/bin/podman.cache" "$HOME/bin/podman.config"
+        echo "$HOME/bin" >> "${GITHUB_PATH}"
+        echo "DISABLE_AUTO_UPDATES=1" >> "${GITHUB_ENV}"
+        export PATH="$HOME/bin:$PATH"
+        # $GITHUB_ENV only reaches the next step, and without this the updater
+        # in the AppImage asks for a dialog that no runner has
+        export DISABLE_AUTO_UPDATES=1
+
+        # from 24.04 on, only a binary with its own profile may create a
+        # rootless user namespace, and $HOME/bin/podman is not one of them
+        if [ "$(sysctl -n kernel.apparmor_restrict_unprivileged_userns 2>/dev/null)" = 1 ]; then
+          printf 'abi <abi/4.0>,\ninclude <tunables/global>\n\nprofile podman "%s" flags=(unconfined) {\n  userns,\n}\n' \
+            "$HOME/bin/podman" | sudo tee /etc/apparmor.d/podman-home > /dev/null
+          sudo apparmor_parser -r /etc/apparmor.d/podman-home
+          echo "AppArmor profile loaded for $HOME/bin/podman"
+        else
+          echo "No unprivileged_userns restriction, no AppArmor profile needed"
+        fi
+
+        podman --version
+        podman info > /dev/null
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
@@ -285,7 +314,7 @@ runs:
         RECIPE: ${{ inputs.recipe }}
         USE_UNSTABLE_CLI: ${{ inputs.use_unstable_cli }}
         CLI_VERSION: ${{ inputs.cli_version }}
-        AUTH_HEADER: "Authorization: Bearer ${{ github.token }}"
+        GH_TOKEN: ${{ github.token }}
       run: |
         set -euo pipefail
         if [[ "${USE_UNSTABLE_CLI}" == "true" && -z "${CLI_VERSION}" ]]; then
@@ -301,7 +330,9 @@ runs:
             VERIFY_FLAG="--source-branch"
           fi
         else
-          REPO_TAG=$(curl -fLsS --variable '%AUTH_HEADER' --expand-header '{{AUTH_HEADER}}' --retry 5 https://api.github.com/repos/blue-build/cli/tags | jq -r '.[0].name')
+          # -H rather than --expand-header, which needs curl 8.3 and the 22.04
+          # runner image has 7.81
+          REPO_TAG=$(curl -fLsS -H "Authorization: Bearer ${GH_TOKEN}" --retry 5 https://api.github.com/repos/blue-build/cli/tags | jq -r '.[0].name')
           CLI_VERSION_TAG="v0.9"
           VERIFY_FLAG="--source-tag"
         fi
